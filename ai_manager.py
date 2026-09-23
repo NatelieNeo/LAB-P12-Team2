@@ -1,2 +1,2 @@
 print("hello world :)")
-print("i hate programming")
+print("i love programming")
