@@ -57,3 +57,6 @@ gender = get_user_gender()
 weight_kg = get_user_weight()
 
 height_cm = get_user_height()
+
+user_profile = [name, age, gender, weight_kg, height_cm]  #store user profile in a list
+print("Profile setup complete! Here is your profile information: ", user_profile)
