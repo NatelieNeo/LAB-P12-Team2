@@ -115,10 +115,30 @@ def get_meal_preference(): #dynamic: user's meal preference
     meal_preference = input("What type of food do you want to eat today?: ")
     if meal_preference.isdigit():
         print("You've entered an integer, Please enter a valid string.")
-        return meal_preference()
+        return meal_preference
     else:
         print("Yum! ", meal_preference, " sounds good.")
         return meal_preference        
+
+
+def get_meal_source(): #dynamic: user's meal source (eat in or out)
+    meal_source = input("Are you planning to eat out or in today? enter in/out/both: ")
+    if meal_source == "in":
+        print("Nice! Eating in today.")
+        return meal_source
+    elif meal_source == "out":
+        print("Nice! Eating out today.")
+        return meal_source
+    elif meal_source == "both":
+        print("Nice! Eating in & out today.")
+        return meal_source
+    else:
+        print("Invalid entry, please try again.")
+        return get_meal_source()
+    
+
+
+    
 
 print("Hi I am your personal health assistant, Calora!")
 print("I can help you track your health and fitness goals.")
@@ -147,7 +167,14 @@ print("Profile setup complete! Here is your profile information: ", user_profile
 
 print("Okay ", name, " let's start with today's meal plan!") #intro to the daily meals
 
+meal_preference = get_meal_preference()
 
+meal_source = get_meal_source()
+
+
+
+daily_summary = [meal_preference, meal_source] #outro of the daily requirements
+print("Daily summary completed: ", daily_summary)
 
 
 #----Notes----
