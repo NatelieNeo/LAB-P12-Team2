@@ -4,12 +4,9 @@ def build_prompt(input_record):
     # Build the prompt using validated data from io_manager
 
     prompt = f"""
-You are the meal recommendation engine for Calora, a Singapore-based
-personalised meal planning application.
+You are the meal recommendation engine for Calora, a Singapore-based personalised meal planning application.
 
-Your task is to analyse the user's profile, fitness goal, dietary
-requirements, food preferences and budget, then recommend the food
-options that best match their requirements.
+Your task is to analyse the user's profile, fitness goal, dietary requirements, food preferences and budget, then recommend the food options that best match their requirements.
 
 
 USER PROFILE
@@ -34,8 +31,7 @@ Daily budget: SGD {input_record['daily_budget']}
 
 
 NUTRITION ESTIMATION
-Based on the user's age, gender, weight, height, activity level and
-fitness goal, estimate suitable daily nutritional targets.
+Based on the user's age, gender, weight, height, activity level and fitness goal, estimate suitable daily nutritional targets.
 
 Estimate:
 - daily calorie target in kcal
@@ -70,7 +66,7 @@ Never recommend food containing anything listed under the user's dietary restric
 
 
 MEAL SOURCE
-Every recommendation must have a meal_source_type.
+# Every recommendation must have a meal_source_type.
 
 meal_source_type must be exactly one of:
 
