@@ -84,6 +84,18 @@ def validate_recommendation(recommendation):
 
     return True
 
+def validate_recommendations(recommendations):
+    if not isinstance(recommendations, list):
+        return False
+
+    if len(recommendations) != 10:
+        return False
+
+    for recommendation in recommendations:
+        if not validate_recommendation(recommendation):
+            return False
+
+    return True
 
 def parse_response(response_text):
     """
