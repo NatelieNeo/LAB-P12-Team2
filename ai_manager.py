@@ -34,8 +34,6 @@ Daily budget: SGD {input_record['daily_budget']}
 
 
 NUTRITION ESTIMATION
-# AI estimates suitable nutrition targets based on the user's profile
-
 Based on the user's age, gender, weight, height, activity level and
 fitness goal, estimate suitable daily nutritional targets.
 
@@ -54,3 +52,18 @@ For example:
 
 Return the estimated targets as numerical values.
 
+
+FOOD RECOMMENDATIONS
+Generate exactly 10 food recommendations that best match the user's requirements.
+
+Consider all of the following when generating meals:
+
+- estimated nutritional requirements
+- fitness goal
+- dietary restrictions and allergies
+- meal preference
+- available pantry ingredients
+- budget
+- practicality and availability
+
+Never recommend food containing anything listed under the user's dietary restrictions or allergies.
