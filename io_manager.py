@@ -135,7 +135,17 @@ def get_meal_source(): #dynamic: user's meal source (eat in or out)
     else:
         print("Invalid entry, please try again.")
         return get_meal_source()
-    
+
+def get_ingredients_avail(): #dynamic: ingredients avail if eat in
+    if meal_source == "in":
+        ingredients_avail = input("What ingredients do you have?: ")
+        print("Ingredients available: ")    
+        return ingredients_avail
+    elif meal_source == "both":
+        ingredients_avail = input("What ingredients do you have?: ")
+        print("Ingredients available: ")
+
+
 
 
     
@@ -171,9 +181,9 @@ meal_preference = get_meal_preference()
 
 meal_source = get_meal_source()
 
+ingredients_avail = get_ingredients_avail()
 
-
-daily_summary = [meal_preference, meal_source] #outro of the daily requirements
+daily_summary = [meal_preference, meal_source, ingredients_avail] #outro of the daily requirements
 print("Daily summary completed: ", daily_summary)
 
 
