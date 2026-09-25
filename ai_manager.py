@@ -87,3 +87,35 @@ Only recommend home_cooked meals.
 
 If meal preference is "both":
 Recommendations may contain both eat_out and home_cooked options.
+
+# eat_out OPTIONS
+Recommend realistic and affordable local food
+
+For meals where meal_source_type is "eat_out":
+
+- Prioritise food that is affordable and commonly available in Singapore.
+- Prefer realistic hawker centre, coffee shop and food court options.
+- Local dishes may include chicken rice, economical rice, yong tau foo, fishball noodles and other suitable Singapore dishes.
+- Consider the user's fitness and nutritional goals.
+- Give a realistic portion size.
+- Estimate the calories for the portion.
+- Estimate protein, carbohydrates and fat for the portion.
+- Estimate the price in Singapore Dollars.
+- Do not invent a specific restaurant, stall or business.
+- ingredients must be an empty list.
+- recipe_steps must be an empty list.
+
+# home_cooked OPTIONS
+# Include measurements and cooking instructions for recipes
+
+For meals where meal_source_type is "home_cooked":
+
+- Prioritise ingredients already available in the user's pantry.
+- Additional ingredients may be included when necessary.
+- Provide every ingredient required to make one serving.
+- Give the exact quantity and unit for each ingredient.
+- Provide simple cooking instructions in the correct order.
+- Estimate calories, protein, carbohydrates and fat for one serving.
+- Estimate the cost of one serving in SGD.
+- Keep recipes realistic and reasonably easy to prepare.
+
