@@ -88,7 +88,7 @@ def get_activity_level(): #complete
 
 
 def get_user_goal(): #user's goal
-    user_goal = input("Please enter your desired goal (lose/maintain/gain)")
+    user_goal = input("Please enter your desired goal (lose/maintain/gain): ")
     if user_goal == "lose":
         print("Your desire is to lose weight")
         return user_goal
@@ -102,6 +102,8 @@ def get_user_goal(): #user's goal
         print("Invalid input, please try again")
         return get_user_goal()
 
+        
+        
 
 print("Hi I am your personal health assistant, Calora!")
 print("I can help you track your health and fitness goals.")
@@ -119,7 +121,11 @@ height_cm = get_user_height()
 
 activity_level = get_activity_level()
 
-user_profile = [name, age, gender, weight_kg, height_cm, activity_level]  #store user profile in a list
+user_goal = get_user_goal()
+
+
+
+user_profile = [name, age, gender, weight_kg, height_cm, activity_level, user_goal]  #store user profile in a list
 print("Profile setup complete! Here is your profile information: ", user_profile)
 
 #----Notes----
