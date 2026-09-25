@@ -144,3 +144,15 @@ For EVERY food recommendation provide:
 These must be numerical estimates.
 
 Do not use descriptions such as "high protein" instead of numerical values.
+
+
+COST INFORMATION
+# Estimated cost of buying or preparing one serving
+
+For EVERY food recommendation provide:
+- estimated_cost
+
+estimated_cost must be a numerical value in Singapore Dollars.
+
+Consider the user's supplied budget when ranking recommendations.
+
