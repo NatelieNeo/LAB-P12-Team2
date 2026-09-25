@@ -203,3 +203,71 @@ Use exactly the following structure:
 # Returns the completed prompt so it can be sent to the AI API
     return prompt
 
+def call_ai(input_record):
+"""
+Handles communication with Gemini.
+
+Returns:
+dict if successful
+None if all attempts fail
+"""
+
+prompt = build_prompt(input_record)
+
+try:
+client = genai.Client()
+
+except Exception as error:
+logger.error(
+"Failed to initialise Gemini client: %s",
+error
+)
+return None
+
+for attempt in range(1, MAX_RETRIES + 1):
+
+try:
+logger.info(
+"Calling Gemini API - attempt %s/%s",
+attempt,
+MAX_RETRIES
+)
+
+response = client.models.generate_content(
+model=GEMINI_MODEL,
+contents=prompt,
+config={
+"response_mime_type": "application/json"
+}
+)
+
+# Send the AI response to ai_handler_manager.py
+result = parse_response(response.text)
+
+# Valid response
+if result is not None:
+logger.info(
+"AI response successfully validated."
+)
+
+return result
+
+# Invalid response
+logger.warning(
+"Invalid AI response on attempt %s.",
+attempt
+)
+
+except Exception as error:
+logger.error(
+"Gemini API error on attempt %s: %s",
+attempt,
+error
+)
+
+logger.error(
+"AI request failed after %s attempts.",
+MAX_RETRIES
+)
+
+return None
