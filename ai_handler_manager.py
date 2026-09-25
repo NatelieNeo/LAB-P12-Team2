@@ -97,6 +97,30 @@ def validate_recommendations(recommendations):
 
     return True
 
+def validate_response(data):
+    if not isinstance(data, dict):
+        return False
+
+    required_top_fields = {
+        "estimated_nutrition_targets",
+        "recommendations"
+    }
+
+    if set(data.keys()) != required_top_fields:
+        return False
+
+    if not validate_nutrition_targets(
+        data["estimated_nutrition_targets"]
+    ):
+        return False
+
+    if not validate_recommendations(
+        data["recommendations"]
+    ):
+        return False
+
+    return True
+
 def parse_response(response_text):
     """
     Convert Gemini's response text into JSON
