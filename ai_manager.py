@@ -13,6 +13,7 @@ options that best match their requirements.
 
 
 USER PROFILE
+# Basic information collected from io_manager.py
 
 Name: {input_record['name']}
 Age: {input_record['age']}
@@ -23,9 +24,9 @@ Activity level: {input_record['activity_level']}
 Goal: {input_record['goal']}
 
 USER MEAL PREFERENCES
+# Preferences and restrictions collected from io_manager.py
 
 Dietary restrictions/allergies: {input_record['dietary_restrictions']}
-Food craving/preference: {input_record['craving']}
 Meal preference: {input_record['meal_preference']}
 Available pantry ingredients: {input_record['pantry_ingredients']}
 Daily budget: SGD {input_record['daily_budget']}
