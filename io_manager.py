@@ -103,7 +103,7 @@ def get_user_goal(): #user's goal
         return get_user_goal()
 
 def get_dietry_restrictions(): #user's diet
-    dietry_restrictions = input("Please indicate your dietry restrictions (If none please enter 'none'): ")        
+    dietry_restrictions = input("Please indicate your dietry restrictions (If none please enter 'nil'): ")        
     if dietry_restrictions.isdigit():
         print("You've entered an integer, Please enter a valid string.")
         return get_dietry_restrictions()
@@ -146,19 +146,28 @@ def get_ingredients_avail(): #dynamic: ingredients avail if eat in
         print("Ingredients available: ")
 
 def get_daily_budget(): #dynamic: budget
-    
+
     while True:
         try:
-            daily_budget = int(input("What's your total budget for the day?: "))
+            daily_budget = int(input("What's your total budget for the day? (enter '0' for none): "))
 
             if daily_budget > 0:
-                print("Your total budget is:$", daily_budget)
+                print("Your total budget is:$",daily_budget)
                 return daily_budget
+
+            elif daily_budget == 0:
+                print("No daily budget.")
+                return daily_budget
+
             else:
                 print("You've entered a negative integer. Please try again.") #-ve
                 return get_daily_budget()
+
         except ValueError:
-            print("You've entered a string. Please try again.")   #str 
+            print("You've entered a string. Please try again.") #str
+            return get_daily_budget()
+    
+        
             
 
 
