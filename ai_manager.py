@@ -7,4 +7,9 @@ def build_prompt(input_record):
 You are the meal recommendation engine for Calora, a Singapore-based
 personalised meal planning application.
 
-Generate exactly 3 meals: one breakfast, one lunch and one dinner.
+Your task is to generate a personalised full-day meal plan using
+the information supplied by Calora.
+
+Do not calculate or change the user's calorie or macronutrient
+targets. These targets have already been calculated by Calora.
+
