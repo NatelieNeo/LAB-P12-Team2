@@ -23,6 +23,66 @@ def validate_nutrition_targets(targets):
 
     return True
 
+def validate_recommendation(recommendation):
+    if not isinstance(recommendation, dict):
+        return False
+
+    required_recommendation_fields = {
+        "meal_type",
+        "meal_name",
+        "meal_source_type",
+        "calories",
+        "protein_g",
+        "carbs_g",
+        "fat_g",
+        "estimated_cost",
+        "portion_size",
+        "pantry_ingredients_used",
+        "ingredients",
+        "recipe_steps"
+    }
+
+    if set(recommendation.keys()) != required_recommendation_fields:
+        return False
+
+    if not isinstance(recommendation["meal_type"], str):
+        return False
+
+    if not isinstance(recommendation["meal_name"], str):
+        return False
+
+    if not isinstance(recommendation["portion_size"], str):
+        return False
+
+    if recommendation["meal_source_type"] not in [
+        "eat_out",
+        "home_cooked"
+    ]:
+        return False
+
+    numeric_fields = [
+        "calories",
+        "protein_g",
+        "carbs_g",
+        "fat_g",
+        "estimated_cost"
+    ]
+
+    for field in numeric_fields:
+        if not isinstance(recommendation[field], (int, float)):
+            return False
+
+    list_fields = [
+        "pantry_ingredients_used",
+        "ingredients",
+        "recipe_steps"
+    ]
+
+    for field in list_fields:
+        if not isinstance(recommendation[field], list):
+            return False
+
+    return True
 
 
 def parse_response(response_text):
