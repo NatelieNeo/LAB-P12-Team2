@@ -23,6 +23,7 @@ Height: {input_record['height_cm']} cm
 Activity level: {input_record['activity_level']}
 Goal: {input_record['goal']}
 
+
 USER MEAL PREFERENCES
 # Preferences and restrictions collected from io_manager.py
 
@@ -30,3 +31,26 @@ Dietary restrictions/allergies: {input_record['dietary_restrictions']}
 Meal preference: {input_record['meal_preference']}
 Available pantry ingredients: {input_record['pantry_ingredients']}
 Daily budget: SGD {input_record['daily_budget']}
+
+
+NUTRITION ESTIMATION
+# AI estimates suitable nutrition targets based on the user's profile
+
+Based on the user's age, gender, weight, height, activity level and
+fitness goal, estimate suitable daily nutritional targets.
+
+Estimate:
+- daily calorie target in kcal
+- daily protein target in grams
+- daily carbohydrate target in grams
+- daily fat target in grams
+
+The estimates should reasonably support the user's stated fitness goal.
+
+For example:
+- Weight-loss goals should generally prioritise sufficient protein while maintaining an appropriate calorie deficit.
+- Muscle-gain goals should generally prioritise sufficient protein and energy intake to support muscle growth.
+- Maintenance goals should aim to support the user's estimated daily energy requirements.
+
+Return the estimated targets as numerical values.
+
