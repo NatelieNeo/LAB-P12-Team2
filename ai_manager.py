@@ -7,11 +7,9 @@ def build_prompt(input_record):
 You are the meal recommendation engine for Calora, a Singapore-based
 personalised meal planning application.
 
-Your task is to generate a personalised full-day meal plan using
-the information supplied by Calora.
-
-Do not calculate or change the user's calorie or macronutrient
-targets. These targets have already been calculated by Calora.
+Your task is to analyse the user's profile, fitness goal, dietary
+requirements, food preferences and budget, then recommend the food
+options that best match their requirements.
 
 
 USER PROFILE
@@ -24,3 +22,10 @@ Height: {input_record['height_cm']} cm
 Activity level: {input_record['activity_level']}
 Goal: {input_record['goal']}
 
+USER MEAL PREFERENCES
+
+Dietary restrictions/allergies: {input_record['dietary_restrictions']}
+Food craving/preference: {input_record['craving']}
+Meal preference: {input_record['meal_preference']}
+Available pantry ingredients: {input_record['pantry_ingredients']}
+Daily budget: SGD {input_record['daily_budget']}
