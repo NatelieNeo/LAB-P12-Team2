@@ -9,7 +9,9 @@ level=logging.INFO,
 format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-logger = logging.getLogger(name)
+logger = logging.getLogger(__name__)
+
+
 # Build AI Prompt
 
 def build_prompt(input_record):
