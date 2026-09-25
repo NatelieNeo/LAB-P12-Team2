@@ -110,7 +110,15 @@ def get_dietry_restrictions(): #user's diet
     else:
         print("Your dietry restrictions: ", dietry_restrictions)
         return dietry_restrictions
-        
+
+def get_meal_preference(): #dynamic: user's meal preference
+    meal_preference = input("What type of food do you want to eat today?: ")
+    if meal_preference.isdigit():
+        print("You've entered an integer, Please enter a valid string.")
+        return meal_preference()
+    else:
+        print("Yum! ", meal_preference, " sounds good.")
+        return meal_preference        
 
 print("Hi I am your personal health assistant, Calora!")
 print("I can help you track your health and fitness goals.")
@@ -134,6 +142,13 @@ dietry_restrictions = get_dietry_restrictions()
 
 user_profile = [name, age, gender, weight_kg, height_cm, activity_level, user_goal, dietry_restrictions]  #store user profile in a list
 print("Profile setup complete! Here is your profile information: ", user_profile)
+
+#------Start of Dynamic Inputs------
+
+print("Okay ", name, " let's start with today's meal plan!") #intro to the daily meals
+
+
+
 
 #----Notes----
 
