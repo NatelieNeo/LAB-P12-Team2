@@ -17,10 +17,10 @@ def get_user_age():  #complete
                 return age
 
             else:
-                print("Invalid input. Please enter a valid age.")
+                print("You've entered a negative number. Please enter a valid age.") #-ve
                 return get_user_age()  # Recursively call the function until a valid age is entered
         except ValueError:
-            print("Invalid input. Please enter a valid age.") #call the function if age == string
+            print("You've entered a string. Please enter a valid age.") #call the function if age == string
 
 
 
@@ -48,11 +48,11 @@ def get_user_weight():  #complete
                 print("Thanks! Your weight is", weight_kg, "kg.")
                 return weight_kg
             else:
-                print("Invalid input. Please enter a valid weight.")
+                print("You've entered a negative number. Please enter a valid weight.") #-ve
                 return get_user_weight()  # Recursively call the function until a valid weight is entered
 
         except ValueError:
-            print("Invalid input. Please enter a valid weight.")
+            print("You've entered a string. Please enter a valid weight.") #str
 
 
 def get_user_height(): #complete
@@ -65,10 +65,10 @@ def get_user_height(): #complete
                 print("Awesome! Your height is", height_cm, "cm.")
                 return height_cm
             else:
-                print("Invalid input. Please enter a valid height.")
+                print("You've entered a negative number. Please enter a valid height.") #-ve
                 return get_user_height()  # Recursively call the function until a valid height is entered
         except ValueError:
-            print("Invalid input. Please enter a valid height.")
+            print("You've entered a string. Please enter a valid height.") #str
 
 
 def get_activity_level(): #complete
