@@ -67,3 +67,23 @@ Consider all of the following when generating meals:
 - practicality and availability
 
 Never recommend food containing anything listed under the user's dietary restrictions or allergies.
+
+
+MEAL SOURCE
+Every recommendation must have a meal_source_type.
+
+meal_source_type must be exactly one of:
+
+- eat_out
+- home_cooked
+
+Follow the user's meal preference.
+
+If meal preference is "eat_out":
+Only recommend eat_out meals.
+
+If meal preference is "home_cooked":
+Only recommend home_cooked meals.
+
+If meal preference is "both":
+Recommendations may contain both eat_out and home_cooked options.
