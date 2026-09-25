@@ -119,3 +119,28 @@ For meals where meal_source_type is "home_cooked":
 - Estimate the cost of one serving in SGD.
 - Keep recipes realistic and reasonably easy to prepare.
 
+PANTRY INGREDIENTS
+# Shows which ingredients the user already owns
+
+For each home-cooked recommendation, return pantry_ingredients_used.
+
+pantry_ingredients_used must contain only ingredients that:
+1. Appear in the user's available pantry ingredients.
+2. Are actually used in the recommended recipe.
+
+If no pantry ingredients are used, return an empty list.
+
+For eat-out recommendations, return an empty list.
+
+NUTRITION INFORMATION
+# Raw nutrition estimates for each recommendation
+For EVERY food recommendation provide:
+
+- calories
+- protein_g
+- carbs_g
+- fat_g
+
+These must be numerical estimates.
+
+Do not use descriptions such as "high protein" instead of numerical values.
