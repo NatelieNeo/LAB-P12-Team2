@@ -145,6 +145,25 @@ def get_ingredients_avail(): #dynamic: ingredients avail if eat in
         ingredients_avail = input("What ingredients do you have?: ")
         print("Ingredients available: ")
 
+def get_daily_budget(): #dynamic: budget
+    
+    while True:
+        try:
+            daily_budget = int(input("What's your total budget for the day?: "))
+
+            if daily_budget > 0:
+                print("Your total budget is:$", daily_budget)
+                return daily_budget
+            else:
+                print("You've entered a negative integer. Please try again.") #-ve
+                return get_daily_budget()
+        except ValueError:
+            print("You've entered a string. Please try again.")   #str 
+            
+
+
+
+    
 
 
 
@@ -183,7 +202,9 @@ meal_source = get_meal_source()
 
 ingredients_avail = get_ingredients_avail()
 
-daily_summary = [meal_preference, meal_source, ingredients_avail] #outro of the daily requirements
+daily_budget = get_daily_budget()
+
+daily_summary = [meal_preference, meal_source, ingredients_avail, daily_budget] #outro of the daily requirements
 print("Daily summary completed: ", daily_summary)
 
 
