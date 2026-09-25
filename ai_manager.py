@@ -156,3 +156,41 @@ estimated_cost must be a numerical value in Singapore Dollars.
 
 Consider the user's supplied budget when ranking recommendations.
 
+
+OUTPUT FORMAT
+
+-Return ONLY valid JSON.
+-Do not include Markdown.
+-Do not include explanations before or after the JSON.
+-Do not add additional fields.
+-The "recommendations" list must contain exactly 10 recommendation objects using the structure shown below.
+
+Use exactly the following structure:
+{{
+    "estimated_nutrition_targets": {{
+        "calorie_target": 0,
+        "protein_target_g": 0,
+        "carb_target_g": 0,
+        "fat_target_g": 0
+    }},
+
+    "recommendations": [
+        {{
+            "meal_type": "",
+            "meal_name": "",
+            "meal_source_type": "",
+            "calories": 0,
+            "protein_g": 0,
+            "carbs_g": 0,
+            "fat_g": 0,
+            "estimated_cost": 0.00,
+            "portion_size": "",
+            "pantry_ingredients_used": [],
+            "ingredients": [],
+            "recipe_steps": []
+        }}
+    ]
+}}
+"""
+# Returns the completed prompt so it can be sent to the AI API
+    return prompt
