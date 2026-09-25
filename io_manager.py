@@ -86,6 +86,23 @@ def get_activity_level(): #complete
         print("Invalid input, please try again") 
         return get_activity_level()
 
+
+def get_user_goal(): #user's goal
+    user_goal = input("Please enter your desired goal (lose/maintain/gain)")
+    if user_goal == "lose":
+        print("Your desire is to lose weight")
+        return user_goal
+    elif activity_level == "maintain":
+        print("Your desire is to maintain weight")
+        return activity_level
+    elif activity_level == "gain":
+        print("Your desire is to gain muscle")
+        return activity_level
+    else:
+        print("Invalid input, please try again")
+        return get_user_goal()
+
+
 print("Hi I am your personal health assistant, Calora!")
 print("I can help you track your health and fitness goals.")
 print("Let's get started by setting up your profile.")  #intro
@@ -107,6 +124,11 @@ print("Profile setup complete! Here is your profile information: ", user_profile
 
 #----Notes----
 
+#meal_preference = user input (open format)
+#dietary_restrictions = user input (open format)
+#dining_type = in / out
+#if in then 
+
 #BMR = M: (10 * weight_kg) + (6.25 * height_cm) - (5 * age) + 5
 #BMR = F: (10 * weight_kg) + (6.25 * height_cm) - (5 * age) - 161
 
@@ -114,7 +136,7 @@ print("Profile setup complete! Here is your profile information: ", user_profile
 
 #Maintenance_Calories = BMR * Activity_Factor
 
-#desired_loss_percent = 10% / 20% / 30% 
+#desired_loss & desired_gain = 5% / 10% / 15%  
 #need to convert desired_loss_percent into a float
 #e.g. desired_loss_percent = input(float("Please enter your desired loss of weight...."))
 
