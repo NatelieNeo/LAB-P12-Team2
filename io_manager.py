@@ -92,17 +92,24 @@ def get_user_goal(): #user's goal
     if user_goal == "lose":
         print("Your desire is to lose weight")
         return user_goal
-    elif activity_level == "maintain":
+    elif user_goal == "maintain":
         print("Your desire is to maintain weight")
-        return activity_level
-    elif activity_level == "gain":
+        return user_goal
+    elif user_goal == "gain":
         print("Your desire is to gain muscle")
-        return activity_level
+        return user_goal
     else:
         print("Invalid input, please try again")
         return get_user_goal()
 
-        
+def get_dietry_restrictions(): #user's diet
+    dietry_restrictions = input("Please indicate your dietry restrictions (If none please enter 'none'): ")        
+    if dietry_restrictions.isdigit():
+        print("You've entered an integer, Please enter a valid string.")
+        return get_dietry_restrictions()
+    else:
+        print("Your dietry restrictions: ", dietry_restrictions)
+        return dietry_restrictions
         
 
 print("Hi I am your personal health assistant, Calora!")
@@ -123,9 +130,9 @@ activity_level = get_activity_level()
 
 user_goal = get_user_goal()
 
+dietry_restrictions = get_dietry_restrictions()
 
-
-user_profile = [name, age, gender, weight_kg, height_cm, activity_level, user_goal]  #store user profile in a list
+user_profile = [name, age, gender, weight_kg, height_cm, activity_level, user_goal, dietry_restrictions]  #store user profile in a list
 print("Profile setup complete! Here is your profile information: ", user_profile)
 
 #----Notes----
