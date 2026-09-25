@@ -1,3 +1,15 @@
+import logging
+from google import genai
+
+from config import GEMINI_MODEL, MAX_RETRIES
+from ai_handler_manager import parse_response
+
+logging.basicConfig(
+level=logging.INFO,
+format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+logger = logging.getLogger(name)
 # Build AI Prompt
 
 def build_prompt(input_record):
@@ -190,3 +202,4 @@ Use exactly the following structure:
 """
 # Returns the completed prompt so it can be sent to the AI API
     return prompt
+
