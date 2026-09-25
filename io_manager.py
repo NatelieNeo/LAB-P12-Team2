@@ -104,3 +104,29 @@ activity_level = get_activity_level()
 
 user_profile = [name, age, gender, weight_kg, height_cm, activity_level]  #store user profile in a list
 print("Profile setup complete! Here is your profile information: ", user_profile)
+
+#----Notes----
+
+#BMR = M: (10 * weight_kg) + (6.25 * height_cm) - (5 * age) + 5
+#BMR = F: (10 * weight_kg) + (6.25 * height_cm) - (5 * age) - 161
+
+#Activity_Factor = sedentary(1.2), moderately active(1.5), very active(1.7)
+
+#Maintenance_Calories = BMR * Activity_Factor
+
+#desired_loss_percent = 10% / 20% / 30% 
+#need to convert desired_loss_percent into a float
+#e.g. desired_loss_percent = input(float("Please enter your desired loss of weight...."))
+
+#Weight_Loss_Calories = Maintenance_Calories * (1 - desired_loss_percent)
+
+#muscle_gain_Calories = Maintenance_Calories * 1.1 #keep it standardised, allow 10% surplus first
+
+#weight_loss_Protein = weight_kg * 2.0
+#maintenance_Protein = weight_kg * 1.6
+#muscle_gain_Protein = weight_kg * 1.8 
+
+#carbs = (calories * 0.5) / 4
+
+#round up the protein & carbs
+#protein = round(protein)      carbs = round(carbs)
