@@ -123,3 +123,35 @@ def validate_response(data):
                 return False
 
     return True
+
+def parse_response(response_text):
+    """
+    Convert Gemini's response text into JSON
+    and validate its structure.
+
+    Returns:
+        dict if valid
+        None if invalid
+    """
+
+    if not response_text:
+        logger.warning("AI returned an empty response.")
+        return None
+
+    try:
+        data = json.loads(response_text)
+
+    except json.JSONDecodeError as error:
+        logger.warning(
+            "AI response contains invalid JSON: %s",
+            error
+        )
+        return None
+
+    if not validate_response(data):
+        logger.warning(
+            "AI response failed schema validation."
+        )
+        return None
+
+    return data
