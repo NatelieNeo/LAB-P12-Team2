@@ -212,7 +212,7 @@ def collect_user_input():
 
     meal_source = get_meal_source()
 
-    ingredients_avail = get_ingredients_avail()
+    ingredients_avail = get_ingredients_avail(meal_source) # Pass meal_source into the ingredients function
 
     daily_budget = get_daily_budget()
 
