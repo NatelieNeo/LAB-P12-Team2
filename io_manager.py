@@ -12,12 +12,12 @@ def get_user_age():  #complete
 
             age = int(input("Please enter your age: ")) #age of user
 
-            if age > 0 and age < 100:
+            if age > 12 and age < 100:
                 print("Great! Nice to know you're", age, "years old.")
                 return age
 
             else:
-                print("You've entered a negative number. Please enter a valid age.") #-ve
+                print("You've entered an invalid age. Please enter a valid age.") #-ve/too low/too high
                 return get_user_age()  # Recursively call the function until a valid age is entered
         except ValueError:
             print("You've entered a string. Please enter a valid age.") #call the function if age == string
@@ -149,9 +149,9 @@ def get_daily_budget(): #dynamic: budget
 
     while True:
         try:
-            daily_budget = int(input("What's your total budget for the day? (enter '0' for none): "))
+            daily_budget = int(input("What's your total budget for the day? (minimum $6) (enter '0' for none): "))
 
-            if daily_budget > 0:
+            if daily_budget > 6:
                 print("Your total budget is:$",daily_budget)
                 return daily_budget
 
@@ -160,7 +160,7 @@ def get_daily_budget(): #dynamic: budget
                 return daily_budget
 
             else:
-                print("You've entered a negative integer. Please try again.") #-ve
+                print("You've entered an invalid amount. Please try again.") #-ve/too low
                 return get_daily_budget()
 
         except ValueError:
