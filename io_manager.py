@@ -12,7 +12,7 @@ def get_user_age():  #complete
 
             age = int(input("Please enter your age: ")) #age of user
 
-            if age > 0:
+            if age > 0 and age < 100:
                 print("Great! Nice to know you're", age, "years old.")
                 return age
 
@@ -44,11 +44,11 @@ def get_user_weight():  #complete
 
             weight_kg = float(input("Please enter your weight in kg (up to 1 decimal place): ")) #weight of user
 
-            if weight_kg > 0:
+            if weight_kg > 20 and weight_kg < 300:  # realistic weight range
                 print("Thanks! Your weight is", weight_kg, "kg.")
                 return weight_kg
             else:
-                print("You've entered a negative number. Please enter a valid weight.") #-ve
+                print("You've entered a negative number / unrealistic value. Please enter a valid weight.") #-ve
                 return get_user_weight()  # Recursively call the function until a valid weight is entered
 
         except ValueError:
@@ -61,11 +61,11 @@ def get_user_height(): #complete
         try:
 
             height_cm = float(input("Please enter your height in cm (up to 1 decimal place): ")) #height of user
-            if height_cm > 0:
+            if height_cm > 50 and height_cm < 250:  # realistic height range
                 print("Awesome! Your height is", height_cm, "cm.")
                 return height_cm
             else:
-                print("You've entered a negative number. Please enter a valid height.") #-ve
+                print("You've entered an unrealistic value. Please enter a valid height.") #-ve
                 return get_user_height()  # Recursively call the function until a valid height is entered
         except ValueError:
             print("You've entered a string. Please enter a valid height.") #str
