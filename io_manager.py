@@ -74,13 +74,13 @@ def get_user_height(): #complete
 def get_activity_level(): #complete
     activity_level = input("Please enter your activity level (sedentary /workout 1-2 times a week/, moderately active /workout 3-4 times a week/, very active /5-6 times a week/): ")  
     if activity_level == "sedentary":
-        print("cool ", name)
+        print("Cool!")
         return activity_level
     elif activity_level == "moderately active":
-        print("That's great ", name)
+        print("That's great!")
         return activity_level  
     elif activity_level == "very active":
-        print("Wow, that's impressive ", name) 
+        print("Wow, that's impressive!") 
         return activity_level 
     else:
         print("Invalid input, please try again") 
@@ -136,7 +136,7 @@ def get_meal_source(): #dynamic: user's meal source (eat in or out)
         print("Invalid entry, please try again.")
         return get_meal_source()
 
-def get_ingredients_avail(): #dynamic: ingredients avail if eat in
+def get_ingredients_avail(meal_source): #dynamic: ingredients avail if eat in
     if meal_source == "in":
         ingredients_avail = input("What ingredients do you have?: ")
         print("Ingredients available: ")    
@@ -144,6 +144,9 @@ def get_ingredients_avail(): #dynamic: ingredients avail if eat in
     elif meal_source == "both":
         ingredients_avail = input("What ingredients do you have?: ")
         print("Ingredients available: ")
+        return ingredients_avail
+    elif meal_source == "out": # No pantry ingredients needed if only eating out
+        return ""
 
 def get_daily_budget(): #dynamic: budget
 
