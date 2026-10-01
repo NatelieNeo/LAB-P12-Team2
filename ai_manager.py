@@ -40,6 +40,7 @@ USER MEAL PREFERENCES
 
 Dietary restrictions/allergies: {input_record['dietary_restrictions']}
 Meal preference: {input_record['meal_preference']}
+Meal source: {input_record['meal_source']}
 Available pantry ingredients: {input_record['pantry_ingredients']}
 Daily budget: SGD {input_record['daily_budget']}
 
@@ -87,15 +88,15 @@ meal_source_type must be exactly one of:
 - eat_out
 - home_cooked
 
-Follow the user's meal preference.
+Follow the user's meal_source.
 
-If meal preference is "eat_out":
-Only recommend eat_out meals.
-
-If meal preference is "home_cooked":
+If meal_source is "in":
 Only recommend home_cooked meals.
 
-If meal preference is "both":
+If meal_source is "out":
+Only recommend eat_out meals.
+
+If meal_source is "both":
 Recommendations may contain both eat_out and home_cooked options.
 
 # eat_out OPTIONS
