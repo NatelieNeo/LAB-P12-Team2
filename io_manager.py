@@ -173,48 +173,48 @@ def get_daily_budget(): #dynamic: budget
 
 
     
+# ----- Collect all user inputs -----
 
+def collect_user_input():
 
+    print("Hi I am your personal health assistant, Calora!")
+    print("I can help you track your health and fitness goals.")
+    print("Let's get started by setting up your profile.")  #intro
 
-    
+    #-------Profile Setup-------
+    name = get_user_name()
 
-print("Hi I am your personal health assistant, Calora!")
-print("I can help you track your health and fitness goals.")
-print("Let's get started by setting up your profile.")  #intro
-#-------Profile Setup-------
-name = get_user_name()
+    age = get_user_age()
 
-age = get_user_age()
+    gender = get_user_gender()
 
-gender = get_user_gender()
+    weight_kg = get_user_weight()
 
-weight_kg = get_user_weight()
+    height_cm = get_user_height()
 
-height_cm = get_user_height()
+    activity_level = get_activity_level()
 
-activity_level = get_activity_level()
+    user_goal = get_user_goal()
 
-user_goal = get_user_goal()
+    dietry_restrictions = get_dietry_restrictions()
 
-dietry_restrictions = get_dietry_restrictions()
+    user_profile = [name, age, gender, weight_kg, height_cm, activity_level, user_goal, dietry_restrictions]  #store user profile in a list
+    print("Profile setup complete! Here is your profile information: ", user_profile)
 
-user_profile = [name, age, gender, weight_kg, height_cm, activity_level, user_goal, dietry_restrictions]  #store user profile in a list
-print("Profile setup complete! Here is your profile information: ", user_profile)
+    #------Start of Dynamic Inputs------
 
-#------Start of Dynamic Inputs------
+    print("Okay ", name, " let's start with today's meal plan!") #intro to the daily meals
 
-print("Okay ", name, " let's start with today's meal plan!") #intro to the daily meals
+    meal_preference = get_meal_preference()
 
-meal_preference = get_meal_preference()
+    meal_source = get_meal_source()
 
-meal_source = get_meal_source()
+    ingredients_avail = get_ingredients_avail()
 
-ingredients_avail = get_ingredients_avail()
+    daily_budget = get_daily_budget()
 
-daily_budget = get_daily_budget()
-
-daily_summary = [meal_preference, meal_source, ingredients_avail, daily_budget] #outro of the daily requirements
-print("Daily summary completed: ", daily_summary)
+    daily_summary = [meal_preference, meal_source, ingredients_avail, daily_budget] #outro of the daily requirements
+    print("Daily summary completed: ", daily_summary)
 
 
 #----Notes----
