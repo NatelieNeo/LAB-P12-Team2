@@ -206,7 +206,7 @@ def collect_user_input():
 
     #------Start of Dynamic Inputs------
 
-    print("Okay ", name, " let's start with today's meal plan!") #intro to the daily meals
+    print("Okay ", name, " let's get started with today's meal plan!") #intro to the daily meals
 
     meal_preference = get_meal_preference()
 
