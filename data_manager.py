@@ -5,16 +5,16 @@ import uuid
 def save_user_input(filepath, user_data):
 
     try:
-        with open(filepath, 'r') as user_information:
-            users = json.load(user_information)
-    except(FileNotFoundError, json.JSONDecodeError):
+        with open(filepath, 'r') as user_information: #open JSON file in read mode
+            users = json.load(user_information) 
+    except(FileNotFoundError, json.JSONDecodeError): #if file not found create an empty dict
         users = {}
 
-    entry_id = str(uuid.uuid4())   # unique every time
-    users[entry_id] = user_data
+    entry_id = str(uuid.uuid4()) #create a unique uuid for the user
+    users[entry_id] = user_data 
 
-    with open(filepath, "w") as user_information:
-        json.dump(users, user_information, indent=1)
+    with open(filepath, "w") as user_information: #open JSON file in write mode
+        json.dump(users, user_information, indent=1) #writes the new user into the dictionary
 
     return users
 
