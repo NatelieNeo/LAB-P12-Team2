@@ -1,8 +1,15 @@
+import os
 import logging
+
+from dotenv import load_dotenv
 from google import genai
 
 from config import GEMINI_MODEL, MAX_RETRIES
 from ai_handler_manager import parse_response
+
+
+
+load_dotenv()  # Load environment variables from .env file
 
 logging.basicConfig(
 level=logging.INFO,
