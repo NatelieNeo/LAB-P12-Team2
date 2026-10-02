@@ -1,0 +1,58 @@
+{
+ "Sean": {
+  "name": "Sean",
+  "age": 22,
+  "gender": "M",
+  "weight_kg": 69.0,
+  "height_cm": 176.0,
+  "activity_level": "moderately active",
+  "goal": "gain",
+  "dietary_restrictions": "nil",
+  "meal_preference": "Japanese",
+  "meal_source": "out",
+  "pantry_ingredients": "",
+  "daily_budget": 0
+ },
+ "Ben": {
+  "name": "Ben",
+  "age": 37,
+  "gender": "M",
+  "weight_kg": 82.0,
+  "height_cm": 179.0,
+  "activity_level": "very active",
+  "goal": "lose",
+  "dietary_restrictions": "nil",
+  "meal_preference": "western",
+  "meal_source": "out",
+  "pantry_ingredients": "",
+  "daily_budget": 0
+ },
+ "Sam": {
+  "name": "Sam",
+  "age": 19,
+  "gender": "F",
+  "weight_kg": 48.0,
+  "height_cm": 162.0,
+  "activity_level": "sedentary",
+  "goal": "lose",
+  "dietary_restrictions": "nil",
+  "meal_preference": "korean",
+  "meal_source": "out",
+  "pantry_ingredients": "",
+  "daily_budget": 20
+ },
+ "Jess": {
+  "name": "Jess",
+  "age": 24,
+  "gender": "F",
+  "weight_kg": 42.0,
+  "height_cm": 161.0,
+  "activity_level": "very active",
+  "goal": "gain",
+  "dietary_restrictions": "halal",
+  "meal_preference": "kopitiam",
+  "meal_source": "out",
+  "pantry_ingredients": "",
+  "daily_budget": 15
+ }
+}
