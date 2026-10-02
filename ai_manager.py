@@ -1,8 +1,15 @@
+import os
 import logging
+
+from dotenv import load_dotenv
 from google import genai
 
 from config import GEMINI_MODEL, MAX_RETRIES
 from ai_handler_manager import parse_response
+
+
+
+load_dotenv()  # Load environment variables from .env file
 
 logging.basicConfig(
 level=logging.INFO,
@@ -216,6 +223,25 @@ def call_ai(input_record):
     """
 
     prompt = build_prompt(input_record)
+    
+    api_key = os.getenv("GEMINI_API_KEY")
+    
+    if not api_key:
+        logger.error("GEMINI_API_KEY was not found in the .env file.")
+        return None
+
+    try:
+        # Initialise Gemini client using API key
+        client = genai.Client(
+            api_key=api_key
+        )
+
+    except Exception as error:
+        logger.error(
+            "Failed to initialise Gemini client: %s",
+            error
+        )
+        return None
 
     try:
         client = genai.Client()
