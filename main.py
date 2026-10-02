@@ -1,6 +1,7 @@
 # Connects the IO layer to the AI layer
 from io_manager import collect_user_input
 from ai_manager import call_ai
+from ai_handler_manager import parse_response
 
 def main():
 
@@ -14,10 +15,21 @@ def main():
     if ai_output is None:
         print("Unable to generate meal recommendations.")
         return
+    
+    # ----- AI HANDLER LAYER -----
+    # Parse and validate the AI response using ai_handler_manager
+    raw_ai_output = ai_output
+    validated_ai_output = parse_response(raw_ai_output)
 
-    # Temporary: display AI output to check that linkage works
-    print(ai_output)
+    # Stop the program if the AI response is invalid
+    if validated_ai_output is None:
+        print("AI returned an invalid meal recommendation response.")
+        return
 
+    # ----- OUTPUT -----
+    # Temporary: display validated AI output
+    print("\n===== VALIDATED AI OUTPUT =====")
+    print(validated_ai_output)
 
 # Run the program
 if __name__ == "__main__":
