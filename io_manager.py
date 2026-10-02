@@ -112,13 +112,13 @@ def get_dietry_restrictions(): #user's diet
         return dietry_restrictions
 
 def get_meal_preference(): #dynamic: user's meal preference
-    meal_preference = input("What type of food do you want to eat today?: ")
-    if meal_preference.isdigit():
-        print("You've entered an integer, Please enter a valid string.")
-        return meal_preference
-    else:
-        print("Yum! ", meal_preference, " sounds good.")
-        return meal_preference        
+    while True:
+        meal_preference = input("What type of food do you want to eat today?: ")
+        if meal_preference.isdigit():
+            print("You've entered an integer, Please enter a valid string.")
+        else:
+            print("Yum! ", meal_preference, " sounds good.")
+            return meal_preference        
 
 
 def get_meal_source(): #dynamic: user's meal source (eat in or out)
