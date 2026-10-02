@@ -74,13 +74,13 @@ def get_user_height(): #complete
 def get_activity_level(): #complete
     activity_level = input("Please enter your activity level (sedentary /workout 1-2 times a week/, moderately active /workout 3-4 times a week/, very active /5-6 times a week/): ")  
     if activity_level == "sedentary":
-        print("cool ", name)
+        print("Cool!")
         return activity_level
     elif activity_level == "moderately active":
-        print("That's great ", name)
+        print("That's great!")
         return activity_level  
     elif activity_level == "very active":
-        print("Wow, that's impressive ", name) 
+        print("Wow, that's impressive!") 
         return activity_level 
     else:
         print("Invalid input, please try again") 
@@ -102,23 +102,23 @@ def get_user_goal(): #user's goal
         print("Invalid input, please try again")
         return get_user_goal()
 
-def get_dietry_restrictions(): #user's diet
-    dietry_restrictions = input("Please indicate your dietry restrictions (If none please enter 'nil'): ")        
-    if dietry_restrictions.isdigit():
+def get_dietary_restrictions(): #user's diet
+    dietary_restrictions = input("Please indicate your dietary restrictions (If none please enter 'nil'): ")        
+    if dietary_restrictions.isdigit():
         print("You've entered an integer, Please enter a valid string.")
-        return get_dietry_restrictions()
+        return get_dietary_restrictions()
     else:
-        print("Your dietry restrictions: ", dietry_restrictions)
-        return dietry_restrictions
+        print("Your dietary restrictions: ", dietary_restrictions)
+        return dietary_restrictions
 
 def get_meal_preference(): #dynamic: user's meal preference
-    meal_preference = input("What type of food do you want to eat today?: ")
-    if meal_preference.isdigit():
-        print("You've entered an integer, Please enter a valid string.")
-        return meal_preference
-    else:
-        print("Yum! ", meal_preference, " sounds good.")
-        return meal_preference        
+    while True:
+        meal_preference = input("What type of food do you want to eat today?: ")
+        if meal_preference.isdigit():
+            print("You've entered an integer, Please enter a valid string.")
+        else:
+            print("Yum! ", meal_preference, " sounds good.")
+            return meal_preference        
 
 
 def get_meal_source(): #dynamic: user's meal source (eat in or out)
@@ -136,7 +136,7 @@ def get_meal_source(): #dynamic: user's meal source (eat in or out)
         print("Invalid entry, please try again.")
         return get_meal_source()
 
-def get_ingredients_avail(): #dynamic: ingredients avail if eat in
+def get_ingredients_avail(meal_source): #dynamic: ingredients avail if eat in
     if meal_source == "in":
         ingredients_avail = input("What ingredients do you have?: ")
         print("Ingredients available: ")    
@@ -144,6 +144,9 @@ def get_ingredients_avail(): #dynamic: ingredients avail if eat in
     elif meal_source == "both":
         ingredients_avail = input("What ingredients do you have?: ")
         print("Ingredients available: ")
+        return ingredients_avail
+    elif meal_source == "out": # No pantry ingredients needed if only eating out
+        return ""
 
 def get_daily_budget(): #dynamic: budget
 
@@ -173,48 +176,66 @@ def get_daily_budget(): #dynamic: budget
 
 
     
+# ----- Collect all user inputs -----
 
+def collect_user_input():
 
+    print("Hi I am your personal health assistant, Calora!")
+    print("I can help you track your health and fitness goals.")
+    print("Let's get started by setting up your profile.")  #intro
 
-    
+    #-------Profile Setup-------
+    name = get_user_name()
 
-print("Hi I am your personal health assistant, Calora!")
-print("I can help you track your health and fitness goals.")
-print("Let's get started by setting up your profile.")  #intro
-#-------Profile Setup-------
-name = get_user_name()
+    age = get_user_age()
 
-age = get_user_age()
+    gender = get_user_gender()
 
-gender = get_user_gender()
+    weight_kg = get_user_weight()
 
-weight_kg = get_user_weight()
+    height_cm = get_user_height()
 
-height_cm = get_user_height()
+    activity_level = get_activity_level()
 
-activity_level = get_activity_level()
+    user_goal = get_user_goal()
 
-user_goal = get_user_goal()
+    dietary_restrictions = get_dietary_restrictions()
 
-dietry_restrictions = get_dietry_restrictions()
+    user_profile = [name, age, gender, weight_kg, height_cm, activity_level, user_goal, dietary_restrictions]  #store user profile in a list
+    print("Profile setup complete! Here is your profile information: ", user_profile)
 
-user_profile = [name, age, gender, weight_kg, height_cm, activity_level, user_goal, dietry_restrictions]  #store user profile in a list
-print("Profile setup complete! Here is your profile information: ", user_profile)
+    #------Start of Dynamic Inputs------
 
-#------Start of Dynamic Inputs------
+    print("Okay ", name, " let's start with today's meal plan!") #intro to the daily meals
 
-print("Okay ", name, " let's start with today's meal plan!") #intro to the daily meals
+    meal_preference = get_meal_preference()
 
-meal_preference = get_meal_preference()
+    meal_source = get_meal_source()
 
-meal_source = get_meal_source()
+    ingredients_avail = get_ingredients_avail(meal_source) # Pass meal_source into the ingredients function
 
-ingredients_avail = get_ingredients_avail()
+    daily_budget = get_daily_budget()
 
-daily_budget = get_daily_budget()
+    daily_summary = [meal_preference, meal_source, ingredients_avail, daily_budget] #outro of the daily requirements
+    print("Daily summary completed: ", daily_summary)
 
-daily_summary = [meal_preference, meal_source, ingredients_avail, daily_budget] #outro of the daily requirements
-print("Daily summary completed: ", daily_summary)
+    # ----- Combine everything into one dictionary -----
+    input_record = {
+        "name": name,
+        "age": age,
+        "gender": gender,
+        "weight_kg": weight_kg,
+        "height_cm": height_cm,
+        "activity_level": activity_level,
+        "goal": user_goal,
+        "dietary_restrictions": dietary_restrictions,
+        "meal_preference": meal_preference,
+        "meal_source": meal_source,
+        "pantry_ingredients": ingredients_avail,
+        "daily_budget": daily_budget
+        }
+    # Send user data back to main.py
+    return input_record
 
 
 #----Notes----
