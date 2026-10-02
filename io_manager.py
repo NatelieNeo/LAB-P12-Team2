@@ -12,12 +12,12 @@ def get_user_age():  #complete
 
             age = int(input("Please enter your age: ")) #age of user
 
-            if age > 0:
+            if age > 12 and age < 100:
                 print("Great! Nice to know you're", age, "years old.")
                 return age
 
             else:
-                print("You've entered a negative number. Please enter a valid age.") #-ve
+                print("You've entered an invalid age. Please enter a valid age.") #-ve/too low/too high
                 return get_user_age()  # Recursively call the function until a valid age is entered
         except ValueError:
             print("You've entered a string. Please enter a valid age.") #call the function if age == string
@@ -44,11 +44,11 @@ def get_user_weight():  #complete
 
             weight_kg = float(input("Please enter your weight in kg (up to 1 decimal place): ")) #weight of user
 
-            if weight_kg > 0:
+            if weight_kg > 20 and weight_kg < 300:  # realistic weight range
                 print("Thanks! Your weight is", weight_kg, "kg.")
                 return weight_kg
             else:
-                print("You've entered a negative number. Please enter a valid weight.") #-ve
+                print("You've entered a negative number / unrealistic value. Please enter a valid weight.") #-ve
                 return get_user_weight()  # Recursively call the function until a valid weight is entered
 
         except ValueError:
@@ -61,11 +61,11 @@ def get_user_height(): #complete
         try:
 
             height_cm = float(input("Please enter your height in cm (up to 1 decimal place): ")) #height of user
-            if height_cm > 0:
+            if height_cm > 50 and height_cm < 250:  # realistic height range
                 print("Awesome! Your height is", height_cm, "cm.")
                 return height_cm
             else:
-                print("You've entered a negative number. Please enter a valid height.") #-ve
+                print("You've entered an unrealistic value. Please enter a valid height.") #-ve
                 return get_user_height()  # Recursively call the function until a valid height is entered
         except ValueError:
             print("You've entered a string. Please enter a valid height.") #str
@@ -152,9 +152,9 @@ def get_daily_budget(): #dynamic: budget
 
     while True:
         try:
-            daily_budget = int(input("What's your total budget for the day? (enter '0' for none): "))
+            daily_budget = int(input("What's your total budget for the day? (minimum $6) (enter '0' for none): "))
 
-            if daily_budget > 0:
+            if daily_budget > 6:
                 print("Your total budget is:$",daily_budget)
                 return daily_budget
 
@@ -163,7 +163,7 @@ def get_daily_budget(): #dynamic: budget
                 return daily_budget
 
             else:
-                print("You've entered a negative integer. Please try again.") #-ve
+                print("You've entered an invalid amount. Please try again.") #-ve/too low
                 return get_daily_budget()
 
         except ValueError:
@@ -206,7 +206,7 @@ def collect_user_input():
 
     #------Start of Dynamic Inputs------
 
-    print("Okay ", name, " let's start with today's meal plan!") #intro to the daily meals
+    print("Okay ", name, " let's get started with today's meal plan!") #intro to the daily meals
 
     meal_preference = get_meal_preference()
 
