@@ -341,7 +341,14 @@ while True:
             if new_value is not None:
                 user_profile[field] = new_value
 
-        print("\n Profile Updated!\n")        
+        print("\n Profile Updated!\n")   
+
+    #5. Exit
+    elif choice == "5":
+        print(f"\nGoodbye {user_profile['name']}, stay healthy!")   
+        break
+    else:
+        print("\nInvalid option. Please enter a number from 1 to 5. \n")      
 
 
     
