@@ -61,3 +61,19 @@ def tag_cost(estimated_cost: Optional[float]) -> str:
     return "Premium (>$30)"
 
 
+def find_pantry_ingredients_used(ingredients: Optional[List[Any]], pantry_ingredients: List[str]) -> List[str]:
+    """Deterministic, case-insensitive, substring match between the
+    user's own "ingredients on hand" list and a dish's ingredients — NOT
+    the AI's self-reported pantry_ingredients_used field, which isn't
+    trusted here since the user's actual pantry list is the one
+    authoritative source. Substring (not exact) matching so a pantry
+    entry of "chicken" also matches a longer ingredient name like
+    "chicken breast". Returns the pantry item as the user typed it
+    (e.g. "chicken"), matching the display example."""
+    ingredient_names_lower = [name.lower() for name in get_ingredient_names(ingredients)]
+    used = []
+    for pantry_item in pantry_ingredients or []:
+        pantry_lower = str(pantry_item).lower()
+        if any(pantry_lower in ingredient for ingredient in ingredient_names_lower):
+            used.append(pantry_item)
+    return used
