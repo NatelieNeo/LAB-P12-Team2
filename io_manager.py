@@ -290,6 +290,16 @@ user_profile = {
 }
 
 print("\nProfile setup complete!\n")
+
+
+# fields that can be updated, matched to the function to ask them for them
+
+updatable_fields = {
+    "age": get_user_age,
+    "gender": get_user_gender,
+    "weight_kg": get_user_weight,
+
+}
     
 
 
