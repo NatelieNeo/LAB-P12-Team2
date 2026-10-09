@@ -222,4 +222,12 @@ def calculate_macro_distance(candidate: Dict[str, Any], macro_targets: Dict[str,
     fat_diff = abs(candidate.get("fat_g", 0) - macro_targets.get("fat_g", 0))
     return protein_diff + carbs_diff + fat_diff
 
+def cost_component(candidate: Dict[str, Any]) -> float:
+    """A candidate with an unknown (None) estimated_cost is ranked last
+    on cost, not treated as free — `cost or float("inf")` would be wrong
+    here too, since a genuinely free ($0) dish is falsy and would
+    otherwise be mistaken for "unknown"."""
+    cost = candidate.get("estimated_cost")
+    return float("inf") if cost is None else cost
+
 
