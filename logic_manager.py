@@ -263,3 +263,22 @@ def rank_slot_candidates(
     preferred = apply_source_preference_rule(safe, meal_source_preference)
     pool = preferred if preferred else safe
 
+    scored = []
+    for candidate in pool:
+        annotated = dict(candidate)
+        annotated["_calorie_distance"] = calculate_calorie_distance(candidate, per_meal_calorie_target)
+        annotated["_macro_distance"] = calculate_macro_distance(candidate, macro_targets)
+        scored.append(annotated)
+
+    scored.sort(key=lambda c: (c["_calorie_distance"], c["_macro_distance"], cost_component(c)))
+    return scored
+
+
+def select_top_candidate(ranked_candidates: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+    """The single top-ranked candidate for a slot, or None if the slot
+    has no usable candidates left after the business rules."""
+    return ranked_candidates[0] if ranked_candidates else None
+
+
+
+
