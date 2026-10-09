@@ -23,12 +23,16 @@ def get_user_name(): #complete
     return user_name
 
 
-def get_user_age():  #complete
+def get_user_age(allow_null=False):  #complete
 
     while True:
         try:
 
-            age = int(input("Please enter your age: ")) #age of user
+            user_input = input("Please enter your age: ") or "0"
+            age = int(user_input) # Convert the input to an integer
+
+            if allow_null and age == 0:
+                return None
 
             if age > 12 and age < 100:
                 print("Great! Nice to know you're", age, "years old.")
