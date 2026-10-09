@@ -46,7 +46,7 @@ def get_user_age(allow_null=False):  #complete
 
 
 
-def get_user_gender(): #complete
+def get_user_gender(allow_null=False): #complete
     gender = input("Please enter your gender (M/F): ")
     if gender.upper() == "M":  #allow lowercase inputs too
         print("Great! Hi bro.")
@@ -55,6 +55,9 @@ def get_user_gender(): #complete
         print("Great! Hi sis.")
         return gender.upper()
     else:
+        if allow_null:
+            return None
+
         print("Invalid input. Please enter M or F for gender.")
         return get_user_gender()  # Recursively call the function until a valid gender is entered            
     
