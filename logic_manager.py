@@ -97,3 +97,27 @@ def annotate_meal(
         "cost_tier": tag_cost(candidate.get("estimated_cost")),
         "pantry_ingredients_used": find_pantry_ingredients_used(candidate.get("ingredients"), pantry_ingredients),
     }
+
+
+# ---------------------------------------------------------------------
+# Whole-plan assembly
+# ---------------------------------------------------------------------
+
+def build_plan_explanation(
+    total_calories: float,
+    daily_calorie_target: float,
+    total_cost: Optional[float],
+    daily_budget: Optional[float],
+    within_budget: bool,
+) -> str:
+    """Compose the plain-language summary line shown at the top of the
+    plan — built entirely from data already computed, not an extra AI
+    call, so it's as deterministic as everything else here."""
+    parts = [f"Totals {total_calories:.0f} kcal against a {daily_calorie_target:.0f} kcal daily target"]
+    if daily_budget is not None and total_cost is not None:
+        status = "within" if within_budget else "over"
+        parts.append(f"an estimated {total_cost:.2f} — {status} your {daily_budget:.2f} daily budget")
+    return "; ".join(parts) + "."
+
+
+
