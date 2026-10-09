@@ -53,3 +53,33 @@ MEAL_SLOTS = ["breakfast", "lunch", "dinner"]
 # How far (as a fraction of the per-meal target) a dish's calories may
 # sit and still count as "on_target" rather than under/over.
 CALORIE_FIT_TOLERANCE = 0.20
+
+# ---------------------------------------------------------------------
+# BMR / TDEE / target math
+# ---------------------------------------------------------------------
+
+# Activity multipliers used to convert BMR -> TDEE.
+ACTIVITY_MULTIPLIERS = {
+    "sedentary": 1.2,
+    "light": 1.375,
+    "moderate": 1.55,
+    "active": 1.725,
+    "very_active": 1.9,
+}
+
+# Calorie adjustment applied on top of TDEE, by goal type.
+GOAL_ADJUSTMENTS = {
+    "lose": -500,
+    "maintain": 0,
+    "gain": 300,
+}
+
+# Macro split (protein/carbs/fat as a fraction of total calories) by goal
+# type. "gain" is weighted toward protein deliberately, so muscle-gain
+# users are actually steered toward higher-protein recommendations, not
+# just a bigger calorie surplus with the same macro ratio as maintenance.
+MACRO_SPLITS = {
+    "lose": {"protein": 0.35, "carbs": 0.35, "fat": 0.30},
+    "maintain": {"protein": 0.30, "carbs": 0.40, "fat": 0.30},
+    "gain": {"protein": 0.35, "carbs": 0.40, "fat": 0.25},
+}
