@@ -1,5 +1,8 @@
 
 #----Functions-----
+
+from os import name
+
 def get_user_name():  #complete
     name = input("Please enter your name: ") #name of user
     print("Hi!", name, "it's nice to meet you!")
