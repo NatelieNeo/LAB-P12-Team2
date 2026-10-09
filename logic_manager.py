@@ -230,4 +230,33 @@ def cost_component(candidate: Dict[str, Any]) -> float:
     cost = candidate.get("estimated_cost")
     return float("inf") if cost is None else cost
 
+def rank_slot_candidates(
+    candidates: List[Dict[str, Any]],
+    per_meal_calorie_target: float,
+    macro_targets: Dict[str, float],
+    dietary_restrictions: List[str],
+    meal_source_preference: str,
+) -> List[Dict[str, Any]]:
+    """Apply the hard filters (dietary safety, source preference) for
+    ONE meal slot's raw AI candidates, then rank what's left.
+
+    Ranking key, in priority order:
+      1. Calorie-fit distance (primary) — how close to the per-meal
+         calorie target, since hitting the user's calorie goal is the
+         core purpose of the plan.
+      2. Macro-fit distance (still nutrition, not cost) — how close to
+         the per-meal protein/carbs/fat target, so a goal like "gain"
+         actually favors protein-forward dishes, not just any dish at
+         the right calorie count.
+      3. Cost (secondary factor, exactly as specified) — the final
+         tiebreaker between otherwise similarly-good options, cheaper
+         wins.
+
+    If the source-preference filter would remove every candidate in this
+    slot, it's skipped so a dietary-safe-but-wrong-source dish still
+    gets ranked rather than leaving the slot with zero options — the
+    preference remains a soft/ranking-level nudge in that edge case, but
+    a normal AI response (which is asked to honor the preference already)
+    will rarely need this fallback.
+    """
 
