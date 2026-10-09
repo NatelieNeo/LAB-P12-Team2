@@ -240,6 +240,16 @@ def create_meal_plan(input_record, name): #dynamic: create meal plan
 
     return input_record #dict completed!
 
+def option_list(): #function for options
+    print("1. Create a meal plan")
+    print("2. View previous meal plans")
+    print("3. View your profile")
+    print("4. Update your profile")
+    print("5. Exit the program")
+    x = input("\nPlease select an option from the list below (1-5): ")
+
+    return x 
+
 
             
 
