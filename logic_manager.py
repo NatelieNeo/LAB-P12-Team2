@@ -198,5 +198,13 @@ def apply_dietary_safety_rule(
             safe.append(candidate)
     return safe
 
+def apply_source_preference_rule(
+    candidates: List[Dict[str, Any]], meal_source_preference: str
+) -> List[Dict[str, Any]]:
+    """Rule: enforce the user's eat-out-only / home-cooked-only choice.
+    "both" (or anything else unrecognized) means no restriction."""
+    if not meal_source_preference or meal_source_preference == "both":
+        return candidates
+    return [c for c in candidates if c.get("meal_source_type") == meal_source_preference]
 
 
