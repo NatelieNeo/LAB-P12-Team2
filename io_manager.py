@@ -304,6 +304,10 @@ updatable_fields = {
     "dietary_restrictions": get_dietary_restrictions
 
 }
+
+meal_plans = {} #e.g.meal plans 
+
+#--------Main Menu---------------
     
 
 
