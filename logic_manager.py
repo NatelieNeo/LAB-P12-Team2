@@ -257,6 +257,9 @@ def rank_slot_candidates(
     gets ranked rather than leaving the slot with zero options — the
     preference remains a soft/ranking-level nudge in that edge case, but
     a normal AI response (which is asked to honor the preference already)
-    will rarely need this fallback.
+    will rarely need this fallback. 
     """
+    safe = apply_dietary_safety_rule(candidates, dietary_restrictions)
+    preferred = apply_source_preference_rule(safe, meal_source_preference)
+    pool = preferred if preferred else safe
 
