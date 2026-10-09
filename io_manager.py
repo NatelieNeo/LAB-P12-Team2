@@ -336,8 +336,14 @@ while True:
         for field, ask_function in updatable_fields.items():  
             label = field.replace("_", "").capitalize()
             print(f"Current {label}: {user_profile[field]}")
-            
-                        
+
+            new_value = ask_function(allow_null=True)
+            if new_value is not None:
+                user_profile[field] = new_value
+
+        print("\n Profile Updated!\n")        
+
+
     
 
 
