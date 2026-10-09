@@ -50,8 +50,7 @@ from typing import Any, Dict, List, Optional
 # three slots and is excluded from the plan, not merged into one.
 MEAL_SLOTS = ["breakfast", "lunch", "dinner"]
 
-# How far (as a fraction of the per-meal target) a dish's calories may
-# sit and still count as "on_target" rather than under/over.
+# How far (as a fraction of the per-meal target) a dish's calories may sit and still count as "on_target" rather than under/over.
 CALORIE_FIT_TOLERANCE = 0.20
 
 # ---------------------------------------------------------------------
@@ -83,3 +82,39 @@ MACRO_SPLITS = {
     "maintain": {"protein": 0.30, "carbs": 0.40, "fat": 0.30},
     "gain": {"protein": 0.35, "carbs": 0.40, "fat": 0.25},
 }
+
+def calculate_bmr(gender: str, weight_kg: float, height_cm: float, age: int) -> float:
+    """Mifflin-St Jeor BMR formula. Case-insensitive on gender so an
+    unnormalized value ("Male", "MALE") never silently falls through to
+    the female formula."""
+    base = (10 * weight_kg) + (6.25 * height_cm) - (5 * age)
+    return base + 5 if str(gender).lower() == "male" else base - 161
+
+
+def calculate_tdee(bmr: float, activity_level: str) -> float:
+    """Scale BMR by an activity multiplier to estimate TDEE. Unknown
+    activity levels default to "sedentary" (1.2) rather than crashing."""
+    multiplier = ACTIVITY_MULTIPLIERS.get(activity_level, ACTIVITY_MULTIPLIERS["sedentary"])
+    return bmr * multiplier
+
+
+def calculate_daily_calorie_target(tdee: float, goal: str) -> float:
+    """Apply the goal-based adjustment (deficit/surplus/none) on top of TDEE."""
+    return tdee + GOAL_ADJUSTMENTS.get(goal, 0)
+
+
+def calculate_per_meal_calorie_target(daily_calorie_target: float) -> float:
+    """Split the daily calorie target evenly across the fixed 3 meals/day."""
+    return daily_calorie_target / len(MEAL_SLOTS)
+
+
+def calculate_macro_targets(calorie_amount: float, goal: str) -> Dict[str, float]:
+    """Split a calorie figure (daily OR per-meal — caller decides which)
+    into grams of protein/carbs/fat using the goal's macro split.
+    Protein and carbs are 4 kcal/g, fat is 9 kcal/g."""
+    split = MACRO_SPLITS.get(goal, MACRO_SPLITS["maintain"])
+    return {
+        "protein_g": round((calorie_amount * split["protein"]) / 4, 1),
+        "carbs_g": round((calorie_amount * split["carbs"]) / 4, 1),
+        "fat_g": round((calorie_amount * split["fat"]) / 9, 1),
+    }
