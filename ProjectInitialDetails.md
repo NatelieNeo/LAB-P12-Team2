@@ -4,5 +4,3 @@ Requirements:
 • Format: PDF
 • Purpose: Topic approval and project scope validation
 • Address (URL) of our code repository: https://github.com/NatelieNeo/Group2_Calora.git
-
-test
