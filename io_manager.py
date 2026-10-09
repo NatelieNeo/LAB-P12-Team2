@@ -229,6 +229,17 @@ def create_meal_plan(input_record, name): #dynamic: create meal plan
     daily_summary = [meal_preference, meal_source, pantry_ingredients, daily_budget] #outro of daily requirements
     print("Daily summary completed: ", daily_summary)
 
+    #-------Combine everything into one dictionary-----
+    input_record.update({
+        "meal_preference": meal_preference,
+        "meal_source": meal_source,
+        "pantry_ingredients": pantry_ingredients,
+        "daily_budget": daily_budget
+
+    })
+
+    return input_record #dict completed!
+
 
             
 
