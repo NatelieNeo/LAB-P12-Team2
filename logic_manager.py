@@ -212,4 +212,14 @@ def calculate_calorie_distance(candidate: Dict[str, Any], per_meal_calorie_targe
     per-meal target. Lower is a better fit."""
     return abs(candidate.get("calories", 0) - per_meal_calorie_target)
 
+def calculate_macro_distance(candidate: Dict[str, Any], macro_targets: Dict[str, float]) -> float:
+    """Sum of absolute gram differences between a candidate's macros and
+    the target macros (protein + carbs + fat). Lower is a better fit —
+    this is what makes the BMR/TDEE-derived macro target actually count
+    toward which dish wins, not just a number nobody uses."""
+    protein_diff = abs(candidate.get("protein_g", 0) - macro_targets.get("protein_g", 0))
+    carbs_diff = abs(candidate.get("carbs_g", 0) - macro_targets.get("carbs_g", 0))
+    fat_diff = abs(candidate.get("fat_g", 0) - macro_targets.get("fat_g", 0))
+    return protein_diff + carbs_diff + fat_diff
+
 
