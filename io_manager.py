@@ -13,6 +13,14 @@ def get_username():  #complete
     
     return username
 
+def get_user_name(): #complete
+    user_name = input("Please enter your name: ") or None
+    if user_name is None:
+        print("Invalid input. Please enter a valid name.")
+        return get_user_name() #Call the function until a valid
+
+    print(f"Hi {user_name}, it's nice to meet you!")
+    return user_name
 
 
 def get_user_age():  #complete
