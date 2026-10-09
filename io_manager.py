@@ -84,12 +84,17 @@ def get_user_weight(allow_null=False):  #complete
             print("You've entered a string. Please enter a valid weight.") #str
 
 
-def get_user_height(): #complete
+def get_user_height(allow_null=False): #complete
 
     while True:
         try:
 
-            height_cm = float(input("Please enter your height in cm (up to 1 decimal place): ")) #height of user
+            user_input = input("Please enter your height in cm (up to 1 decimal place): ") or "0"
+            height_cm = float(user_input) # Convert input to float
+
+            if allow_null and height_cm == 0:
+                return None
+
             if height_cm > 50 and height_cm < 250:  # realistic height range
                 print("Awesome! Your height is", height_cm, "cm.")
                 return height_cm
