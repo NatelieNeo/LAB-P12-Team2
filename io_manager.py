@@ -143,8 +143,11 @@ def get_user_goal(allow_null=False): #user's goal
         print("Invalid input, please try again")
         return get_user_goal()
 
-def get_dietary_restrictions(): #user's diet
+def get_dietary_restrictions(allow_null=False): #user's diet
     dietary_restrictions = input("Please indicate your dietary restrictions (If none please enter 'nil'): ")        
+    if allow_null and dietary_restrictions == "":
+        return None
+
     if dietary_restrictions.isdigit():
         print("You've entered an integer, Please enter a valid string.")
         return get_dietary_restrictions()
