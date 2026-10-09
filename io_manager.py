@@ -298,6 +298,10 @@ updatable_fields = {
     "age": get_user_age,
     "gender": get_user_gender,
     "weight_kg": get_user_weight,
+    "height_cm": get_user_height,
+    "activity_level": get_activity_level,
+    "goal": get_user_goal,
+    "dietary_restrictions": get_dietary_restrictions
 
 }
     
