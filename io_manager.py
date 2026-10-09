@@ -125,8 +125,11 @@ def get_activity_level(allow_null=False): #complete
         return get_activity_level()
 
 
-def get_user_goal(): #user's goal
+def get_user_goal(allow_null=False): #user's goal
     user_goal = input("Please enter your desired goal (lose/maintain/gain): ")
+    if allow_null and user_goal == "":
+        return None
+    
     if user_goal == "lose":
         print("Your desire is to lose weight")
         return user_goal
