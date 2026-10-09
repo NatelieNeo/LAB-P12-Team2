@@ -329,7 +329,15 @@ while True:
     elif choice == "3":
         print("\n" + format_user_data({"Your profile": user_profile})) 
 
-    #4. Update your profile                 
+    #4. Update your profile 
+    elif choice == "4":
+        print("\nPress Enter to keep your current value.\n")  
+
+        for field, ask_function in updatable_fields.items():  
+            label = field.replace("_", "").capitalize()
+            print(f"Current {label}: {user_profile[field]}")
+            
+                        
     
 
 
