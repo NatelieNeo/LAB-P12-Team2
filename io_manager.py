@@ -3,10 +3,17 @@
 
 from os import name
 
-def get_user_name():  #complete
-    name = input("Please enter your name: ") #name of user
-    print("Hi!", name, "it's nice to meet you!")
-    return name
+def get_username():  #complete
+    username = input("Please enter your username: ") #name of user
+    
+    if username is None:
+        print("Inavlid input. Please enter a valid username.")
+        return get_username #Call the function till valid
+        
+    
+    return username
+
+
 
 def get_user_age():  #complete
 
