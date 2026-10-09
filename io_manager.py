@@ -196,9 +196,9 @@ def get_daily_budget(): #dynamic: budget
 
     while True:
         try:
-            daily_budget = int(input("What's your total budget for the day? (minimum $6) (enter '0' for none): "))
+            daily_budget = int(input("What's your total budget for the day? (minimum $10) (enter '0' for none): "))
 
-            if daily_budget > 6:
+            if daily_budget > 10: #min budget for the day is $10, to ensure realism
                 print("Your total budget is:$",daily_budget)
                 return daily_budget
 
