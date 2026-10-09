@@ -105,8 +105,12 @@ def get_user_height(allow_null=False): #complete
             print("You've entered a string. Please enter a valid height.") #str
 
 
-def get_activity_level(): #complete
+def get_activity_level(allow_null=False): #complete
     activity_level = input("Please enter your activity level (sedentary /workout 1-2 times a week/, moderately active /workout 3-4 times a week/, very active /5-6 times a week/): ")  
+
+    if allow_null and activity_level == "":
+        return None
+    
     if activity_level == "sedentary":
         print("Cool!")
         return activity_level
