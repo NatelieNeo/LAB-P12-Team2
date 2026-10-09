@@ -77,3 +77,23 @@ def find_pantry_ingredients_used(ingredients: Optional[List[Any]], pantry_ingred
         if any(pantry_lower in ingredient for ingredient in ingredient_names_lower):
             used.append(pantry_item)
     return used
+
+
+def annotate_meal(
+    candidate: Dict[str, Any], per_meal_calorie_target: float, pantry_ingredients: List[str]
+) -> Dict[str, Any]:
+    """Build the FINAL, output-facing dish dict for one chosen candidate
+    — tags and name/source only, no raw numbers, so the displayed dish
+    is robust to small run-to-run drift in the AI's own estimate (a
+    fixed tag from the same bucket of numbers is always the same tag)."""
+    return {
+        "name": candidate.get("meal_name"),
+        "source_type": candidate.get("meal_source_type"),
+        "calorie_range": tag_calorie_range(candidate.get("calories", 0)),
+        "calorie_tag": tag_calorie_fit(candidate.get("calories", 0), per_meal_calorie_target),
+        "protein_tag": tag_protein(candidate.get("protein_g", 0)),
+        "carbs_tag": tag_carbs(candidate.get("carbs_g", 0)),
+        "fat_tag": tag_fat(candidate.get("fat_g", 0)),
+        "cost_tier": tag_cost(candidate.get("estimated_cost")),
+        "pantry_ingredients_used": find_pantry_ingredients_used(candidate.get("ingredients"), pantry_ingredients),
+    }
