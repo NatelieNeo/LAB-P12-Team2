@@ -118,3 +118,26 @@ def calculate_macro_targets(calorie_amount: float, goal: str) -> Dict[str, float
         "carbs_g": round((calorie_amount * split["carbs"]) / 4, 1),
         "fat_g": round((calorie_amount * split["fat"]) / 9, 1),
     }
+
+def calculate_targets(user_profile: Dict[str, Any]) -> Dict[str, Any]:
+    """Run the full BMR -> TDEE -> daily target -> per-meal target/macros
+    pipeline for one user_profile. This is the single source of truth
+    for "what should this user be eating" — never the AI's own
+    estimated_nutrition_targets guess, so the same profile always
+    produces the same targets regardless of what a given AI call
+    happens to estimate that run."""
+    bmr = calculate_bmr(
+        user_profile["gender"], user_profile["weight_kg"], user_profile["height_cm"], user_profile["age"]
+    )
+    tdee = calculate_tdee(bmr, user_profile["activity_level"])
+    daily_calorie_target = calculate_daily_calorie_target(tdee, user_profile["goal"])
+    per_meal_calorie_target = calculate_per_meal_calorie_target(daily_calorie_target)
+    per_meal_macro_targets = calculate_macro_targets(per_meal_calorie_target, user_profile["goal"])
+    return {
+        "bmr": bmr,
+        "tdee": tdee,
+        "daily_calorie_target": daily_calorie_target,
+        "per_meal_calorie_target": per_meal_calorie_target,
+        "per_meal_macro_targets": per_meal_macro_targets,
+    }
+
