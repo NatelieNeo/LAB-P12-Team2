@@ -214,7 +214,11 @@ def get_daily_budget(): #dynamic: budget
             print("You've entered a string. Please try again.") #str
             return get_daily_budget()
     
-        
+def create_meal_plan(input_record, name): #dynamic: create meal plan
+    #-------Start of Dynamic Inputs---------
+    print(f"\nOkay {name}, let's get started with today's meal plan!")
+
+
             
 
 
