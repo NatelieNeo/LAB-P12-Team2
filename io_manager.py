@@ -324,8 +324,12 @@ while True:
             print("\n" + format_user_data(meal_plans))
         else:
             print("\n" + format_user_data({"Your profile": user_profile}))  
-            
-                  
+
+    #3. View your profile
+    elif choice == "3":
+        print("\n" + format_user_data({"Your profile": user_profile})) 
+
+    #4. Update your profile                 
     
 
 
