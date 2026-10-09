@@ -207,4 +207,9 @@ def apply_source_preference_rule(
         return candidates
     return [c for c in candidates if c.get("meal_source_type") == meal_source_preference]
 
+def calculate_calorie_distance(candidate: Dict[str, Any], per_meal_calorie_target: float) -> float:
+    """Absolute difference between a candidate's calories and the
+    per-meal target. Lower is a better fit."""
+    return abs(candidate.get("calories", 0) - per_meal_calorie_target)
+
 
