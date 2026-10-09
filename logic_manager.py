@@ -42,3 +42,14 @@ collectors):
 Public entry point: build_meal_plan(recommendations, user_profile).
   
   """
+
+from typing import Any, Dict, List, Optional
+
+# Fixed assumption: exactly 3 meals a day (breakfast/lunch/dinner). A
+# "Snack" or any other meal_type the AI returns is not one of these
+# three slots and is excluded from the plan, not merged into one.
+MEAL_SLOTS = ["breakfast", "lunch", "dinner"]
+
+# How far (as a fraction of the per-meal target) a dish's calories may
+# sit and still count as "on_target" rather than under/over.
+CALORIE_FIT_TOLERANCE = 0.20
