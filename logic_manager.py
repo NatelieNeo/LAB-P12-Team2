@@ -141,3 +141,62 @@ def calculate_targets(user_profile: Dict[str, Any]) -> Dict[str, Any]:
         "per_meal_macro_targets": per_meal_macro_targets,
     }
 
+# ---------------------------------------------------------------------
+# Normalizing the AI's raw recommendation shape
+# ---------------------------------------------------------------------
+
+def get_ingredient_names(ingredients: Optional[List[Any]]) -> List[str]:
+    """Reduce the AI's ingredients list — each entry either a plain
+    string or a {"item": ..., "quantity": ..., "unit": ...} object (the
+    real ai_response.json shape) — to plain ingredient-name strings.
+    Quantity/unit are discarded; no business rule needs them."""
+    names: List[str] = []
+    for ingredient in ingredients or []:
+        if isinstance(ingredient, dict):
+            item = ingredient.get("item")
+            if item:
+                names.append(str(item))
+        elif isinstance(ingredient, str) and ingredient:
+            names.append(ingredient)
+    return names
+
+
+def group_candidates_by_slot(recommendations: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
+    """Split the AI's single flat `recommendations` list into per-slot
+    buckets keyed by MEAL_SLOTS, matching meal_type case-insensitively
+    ("Breakfast" -> "breakfast"). A meal_type that isn't one of the
+    three fixed slots (e.g. "Snack") is simply not one of the buckets —
+    dropped here, not folded into a real slot."""
+    grouped: Dict[str, List[Dict[str, Any]]] = {slot: [] for slot in MEAL_SLOTS}
+    for candidate in recommendations or []:
+        slot = str(candidate.get("meal_type", "")).strip().lower()
+        if slot in grouped:
+            grouped[slot].append(candidate)
+    return grouped
+
+# ---------------------------------------------------------------------
+# Business rules (applied within one meal slot's candidates)
+# ---------------------------------------------------------------------
+
+def apply_dietary_safety_rule(
+    candidates: List[Dict[str, Any]], dietary_restrictions: List[str]
+) -> List[Dict[str, Any]]:
+    """Rule: exclude any candidate whose ingredients OR dish name contain
+    a restricted item. Substring matching (not exact match) so a
+    "peanut" restriction also catches an ingredient listed as "peanut
+    butter", and checking the dish name too catches a case like "Peanut
+    Butter Toast" even if "peanut butter" never appears as its own
+    ingredient entry."""
+    if not dietary_restrictions:
+        return candidates
+    restricted_lower = [r.lower() for r in dietary_restrictions]
+    safe = []
+    for candidate in candidates:
+        haystack = [name.lower() for name in get_ingredient_names(candidate.get("ingredients"))]
+        haystack.append(str(candidate.get("meal_name", "")).lower())
+        if not any(restricted in text for restricted in restricted_lower for text in haystack):
+            safe.append(candidate)
+    return safe
+
+
+
