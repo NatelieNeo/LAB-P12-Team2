@@ -218,6 +218,17 @@ def create_meal_plan(input_record, name): #dynamic: create meal plan
     #-------Start of Dynamic Inputs---------
     print(f"\nOkay {name}, let's get started with today's meal plan!")
 
+    meal_preference = get_meal_preference()
+
+    meal_source = get_meal_source()
+
+    pantry_ingredients = get_ingredients_avail(meal_source) #Pass meal_source into the ingredients func
+
+    daily_budget = get_daily_budget()
+
+    daily_summary = [meal_preference, meal_source, pantry_ingredients, daily_budget] #outro of daily requirements
+    print("Daily summary completed: ", daily_summary)
+
 
             
 
