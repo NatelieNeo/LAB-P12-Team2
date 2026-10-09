@@ -62,12 +62,16 @@ def get_user_gender(allow_null=False): #complete
         return get_user_gender()  # Recursively call the function until a valid gender is entered            
     
 
-def get_user_weight():  #complete
+def get_user_weight(allow_null=False):  #complete
 
     while True:
         try:
 
-            weight_kg = float(input("Please enter your weight in kg (up to 1 decimal place): ")) #weight of user
+            user_input = input("Please enter your weight in kg (up to 1 decimal place): ") or "0"
+            weight_kg = float(user_input) # Convert the input to float
+
+            if allow_null and weight_kg == 0:
+                return None
 
             if weight_kg > 20 and weight_kg < 300:  # realistic weight range
                 print("Thanks! Your weight is", weight_kg, "kg.")
