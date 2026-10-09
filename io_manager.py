@@ -251,18 +251,12 @@ def option_list(): #function for options
     return x 
 
 
-            
-
-
-
-    
 # ----- Collect all user inputs -----
 
-def collect_user_input():
-
-    print("Hi I am your personal health assistant, Calora!")
-    print("I can help you track your health and fitness goals.")
-    print("Let's get started by setting up your profile.")  #intro
+def welcome():
+    print("Hi I am your personal health assistant, Calora!\n")
+    print("I can help you track your health and fitness goals.\n")
+     #intro
 
     #-------Profile Setup-------
     name = get_user_name()
