@@ -317,6 +317,15 @@ while True:
         plan_number = len(meal_plans) + 1
         meal_plans[f"Meal plan {plan_number}"] = meal_plan
         print(f"\nMeal plan {plan_number} saved!\n")
+
+    #2. View your profile
+    elif choice == "2":
+        if meal_plans:
+            print("\n" + format_user_data(meal_plans))
+        else:
+            print("\n" + format_user_data({"Your profile": user_profile}))  
+            
+                  
     
 
 
