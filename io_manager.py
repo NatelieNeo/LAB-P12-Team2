@@ -308,6 +308,15 @@ updatable_fields = {
 meal_plans = {} #e.g.meal plans 
 
 #--------Main Menu---------------
+while True:
+    choice = option_list().strip()
+
+    #1. create a meal plan
+    if choice == "1":
+        meal_plan = create_meal_plan(dict(user_profile), user_profile["name"])
+        plan_number = len(meal_plans) + 1
+        meal_plans[f"Meal plan {plan_number}"] = meal_plan
+        print(f"\nMeal plan {plan_number} saved!\n")
     
 
 
