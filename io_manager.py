@@ -273,6 +273,23 @@ def format_user_data(user_data): #btr readability function
 # =============================
 
 welcome()
+
+#---------------Profile Setup----------------
+print("Let's set up your profile first.\n")
+
+user_profile = {
+    "name": get_user_name(),
+    "age": get_user_age(),
+    "gender": get_user_gender(),
+    "weight_kg": get_user_weight(),
+    "height_cm": get_user_height(),
+    "activity_level": get_activity_level(),
+    "goal": get_user_goal(),
+    "dietary_restrictions": get_dietary_restrictions()
+
+}
+
+print("\nProfile setup complete!\n")
     
 
 
