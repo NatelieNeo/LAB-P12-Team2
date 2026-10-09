@@ -258,6 +258,17 @@ def welcome():
     print("I can help you track your health and fitness goals.\n")
      #intro
 
+def format_user_data(user_data): #btr readability function
+    formatted_data = ""
+    for entry_id, user_info in user_data.items():
+        for key, value in user_info.items():
+            filtered_key = key.replace("_", " ").capitalize() #format key for readability
+            formatted_data += f"{filtered_key}: {value}\n"
+        formatted_data += "\n"
+    return formatted_data    
+
+
+
     #-------Profile Setup-------
     name = get_user_name()
 
