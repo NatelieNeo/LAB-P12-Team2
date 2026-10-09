@@ -38,3 +38,17 @@ def load_user_profiles(search_key=None, search_value=None):
         return results
 
     return users
+
+def search_user_profile(search_key, search_value):
+    try:
+        with open(user_file_path, 'r') as user_information: #open JSON file in read mode
+            users = json.load(user_information) 
+    except(FileNotFoundError, json.JSONDecodeError): #if file not found create an empty dict
+        users = {}
+
+    results = {}
+    for entry_id, user_data in users.items():
+        if user_data.get(search_key) == search_value:
+            results[entry_id] = user_data
+
+    return results
