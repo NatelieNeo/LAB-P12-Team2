@@ -78,3 +78,33 @@ def verify_user_profile(search_key, search_value):
     else:
         return False
     
+def save_meal_plan(meal_plan_data, user_id):
+    try:
+        with open(meal_plan_file_path, 'r') as meal_plan_information: #open JSON file in read mode
+            meal_plans = json.load(meal_plan_information) 
+    except(FileNotFoundError, json.JSONDecodeError): #if file not found create an empty dict
+        meal_plans = {}
+
+    entry_id = str(uuid.uuid4()) #create a unique uuid for the meal plan
+    meal_plans[entry_id] = meal_plan_data 
+    meal_plans[entry_id]["user_id"] = user_id
+
+    with open(meal_plan_file_path, "w") as meal_plan_information: #open JSON file in write mode
+        json.dump(meal_plans, meal_plan_information, indent=1) #writes the new meal plan into the dictionary
+
+    print("Successfully added meal plan information to the dictionary")
+    return meal_plans
+
+def get_meal_plans_by_user(user_id):
+    try:
+        with open(meal_plan_file_path, 'r') as meal_plan_information: #open JSON file in read mode
+            meal_plans = json.load(meal_plan_information) 
+    except(FileNotFoundError, json.JSONDecodeError): #if file not found create an empty dict
+        meal_plans = {}
+
+    user_meal_plans = {}
+    for entry_id, meal_plan_data in meal_plans.items():
+        if meal_plan_data.get("user_id") == user_id:
+            user_meal_plans[entry_id] = meal_plan_data
+
+    return user_meal_plans
