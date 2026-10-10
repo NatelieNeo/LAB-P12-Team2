@@ -4,6 +4,7 @@ import dotenv
 from config import DATA_FILE_ROOT
 
 user_file_path = DATA_FILE_ROOT + "user_profiles.json"
+meal_plan_file_path = DATA_FILE_ROOT + "meal_plans.json"
 
 #Saving user information into a JSON file
 def save_user_profile(user_data):
@@ -69,3 +70,11 @@ def update_user_profile(username, updated_data):
             return
     else:
         print("User not found. No updates made.")
+
+def verify_user_profile(search_key, search_value):
+    results = search_user_profile(search_key, search_value)
+    if results:
+        return True
+    else:
+        return False
+    
