@@ -52,3 +52,20 @@ def search_user_profile(search_key, search_value):
             results[entry_id] = user_data
 
     return results
+
+def update_user_profile(username, updated_data):
+    try:
+        with open(user_file_path, 'r') as user_information: #open JSON file in read mode
+            users = json.load(user_information) 
+    except(FileNotFoundError, json.JSONDecodeError): #if file not found create an empty dict
+        users = {}
+
+    for entry_id, user_data in users.items():
+        if user_data.get("username") == username:
+            users[entry_id].update(updated_data)
+            with open(user_file_path, "w") as user_information: #open JSON file in write mode
+                json.dump(users, user_information, indent=1) #writes the updated user into the dictionary
+            print("Successfully updated user information.")
+            return
+    else:
+        print("User not found. No updates made.")
