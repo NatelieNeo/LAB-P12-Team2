@@ -120,6 +120,88 @@ def build_plan_explanation(
     return "; ".join(parts) + "."
 
 
+def build_meal_plan(
+    recommendations: List[Dict[str, Any]], user_profile: Dict[str, Any]
+) -> Optional[Dict[str, Any]]:
+    """Public entry point. Takes the AI's raw `recommendations` list
+    (ai_response.json's shape) plus the user_profile io_manager.py
+    collected, and returns ONE full-day meal plan: the single best dish
+    per slot, ranked by nutrition fit first and cost second, with the
+    daily budget checked as a whole (budget is the SECONDARY factor —
+    it never overrides which dish best matches the user's calorie/macro
+    target, it only breaks ties and flags whether the resulting day's
+    total fits).
+
+    Returns None only if every slot ends up with zero usable candidates
+    (e.g. dietary restrictions or source preference filtered everything
+    out everywhere) — otherwise returns a plan covering whichever slots
+    DO have a pick, with `is_complete`/`missing_slots` reporting the gap
+    honestly rather than pretending a partial plan is a full one.
+    """
+    
+    targets = calculate_targets(user_profile)
+    per_meal_calorie_target = targets["per_meal_calorie_target"]
+    per_meal_macro_targets = targets["per_meal_macro_targets"]
+    daily_calorie_target = targets["daily_calorie_target"]
+
+    dietary_restrictions = user_profile.get("dietary_restrictions") or []
+    meal_source_preference = user_profile.get("meal_source", "both")
+    pantry_ingredients = user_profile.get("pantry_ingredients") or []
+    daily_budget = user_profile.get("daily_budget")
+
+    grouped = group_candidates_by_slot(recommendations)
+
+    chosen: Dict[str, Dict[str, Any]] = {}
+    missing_slots: List[str] = []
+    for slot in MEAL_SLOTS:
+        ranked = rank_slot_candidates(
+            grouped.get(slot, []),
+            per_meal_calorie_target,
+            per_meal_macro_targets,
+            dietary_restrictions,
+            meal_source_preference,
+        )
+        top = select_top_candidate(ranked)
+        if top is None:
+            missing_slots.append(slot)
+        else:
+            chosen[slot] = top
+
+    if not chosen:
+        return None
+
+    # Plan-level totals are computed from the raw chosen candidates
+    # BEFORE annotate_meal strips the numbers for the per-dish display —
+    # these totals are the one deliberate exception to the tags-only
+    # rule, same as the per-dish tagging design above.
+    total_calories = sum(chosen[slot].get("calories", 0) for slot in chosen)
+    costs = [chosen[slot]["estimated_cost"] for slot in chosen if chosen[slot].get("estimated_cost") is not None]
+    total_cost = sum(costs) if costs else None
+
+    within_budget = True
+    if daily_budget is not None and total_cost is not None:
+        within_budget = total_cost <= daily_budget
+
+    meals = {
+        slot: annotate_meal(chosen[slot], per_meal_calorie_target, pantry_ingredients)
+        for slot in chosen
+    }
+
+    return {
+        "meals": meals,
+        "is_complete": not missing_slots,
+        "missing_slots": missing_slots,
+        "daily_calorie_target": daily_calorie_target,
+        "total_calories": total_calories,
+        "daily_budget": daily_budget,
+        "total_cost": total_cost,
+        "within_budget": within_budget,
+        "explanation": build_plan_explanation(
+            total_calories, daily_calorie_target, total_cost, daily_budget, within_budget
+        ),
+    }
+
+
 def format_meal_plan(plan):
     lines = [
         "=== Your Meal Plan ===",
