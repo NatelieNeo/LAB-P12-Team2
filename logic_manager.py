@@ -120,4 +120,39 @@ def build_plan_explanation(
     return "; ".join(parts) + "."
 
 
+def format_meal_plan(plan):
+    lines = [
+        "=== Your Meal Plan ===",
+        f"Why this plan: {plan['explanation']}",
+    ]
+
+    for slot in ("breakfast", "lunch", "dinner"):
+        meal = plan["meals"].get(slot)
+        if meal is None:
+            continue
+
+        lines.extend([
+            "",
+            f"{slot.capitalize()}: {meal['name']} ({meal['source_type']})",
+            f"Calories: {meal['calorie_range']} — {meal['calorie_tag']} for your target",
+            "Macros: "
+            f"Protein {meal['protein_tag']} / "
+            f"Carbs {meal['carbs_tag']} / "
+            f"Fat {meal['fat_tag']}",
+        ])
+
+        pantry = meal.get("pantry_ingredients_used", [])
+        if pantry:
+            lines.append(f"Uses from your pantry: {', '.join(pantry)}")
+
+        lines.append(f"Cost: {meal['cost_tier']}")
+
+    missing_slots = plan.get("missing_slots", [])
+    if missing_slots:
+        lines.extend([
+            "",
+            "Missing meals: " + ", ".join(missing_slots),
+        ])
+
+    return "\n".join(lines)
 
