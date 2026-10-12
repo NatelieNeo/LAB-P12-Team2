@@ -1,0 +1,48 @@
+{
+ "d14b6020-af1b-4f61-9818-12f2078528f8": {
+  "meals": {
+   "breakfast": {
+    "name": "Scrambled Eggs on Toast with Avocado",
+    "source_type": "home_cooked",
+    "calorie_range": "Moderate (400-700 kcal)",
+    "calorie_tag": "on_target",
+    "protein_tag": "Medium (10-25g)",
+    "carbs_tag": "Medium (15-40g)",
+    "fat_tag": "High (>15g)",
+    "cost_tier": "Budget (<$15)",
+    "pantry_ingredients_used": []
+   },
+   "lunch": {
+    "name": "Western Grilled Chicken Chop",
+    "source_type": "eat_out",
+    "calorie_range": "Moderate (400-700 kcal)",
+    "calorie_tag": "on_target",
+    "protein_tag": "High (>25g)",
+    "carbs_tag": "High (>40g)",
+    "fat_tag": "High (>15g)",
+    "cost_tier": "Budget (<$15)",
+    "pantry_ingredients_used": []
+   },
+   "dinner": {
+    "name": "Creamy Mushroom Pasta",
+    "source_type": "home_cooked",
+    "calorie_range": "Moderate (400-700 kcal)",
+    "calorie_tag": "on_target",
+    "protein_tag": "Medium (10-25g)",
+    "carbs_tag": "High (>40g)",
+    "fat_tag": "High (>15g)",
+    "cost_tier": "Budget (<$15)",
+    "pantry_ingredients_used": []
+   }
+  },
+  "is_complete": true,
+  "missing_slots": [],
+  "daily_calorie_target": 1659.3,
+  "total_calories": 1680,
+  "daily_budget": 30,
+  "total_cost": 15.0,
+  "within_budget": true,
+  "explanation": "Totals 1680 kcal against a 1659 kcal daily target; an estimated 15.00 \u2014 within your 30.00 daily budget.",
+  "user_id": "tim"
+ }
+}
