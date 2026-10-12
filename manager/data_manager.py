@@ -6,9 +6,9 @@ from config import DATA_FILE_ROOT
 user_file_path = DATA_FILE_ROOT + "user_profiles.json"
 meal_plan_file_path = DATA_FILE_ROOT + "meal_plans.json"
 
+
 #Saving user information into a JSON file
 def save_user_profile(user_data):
-
     try:
         with open(user_file_path, 'r') as user_information: #open JSON file in read mode
             users = json.load(user_information) 
@@ -23,6 +23,7 @@ def save_user_profile(user_data):
 
     print("Successfully added user information to the dictionary")
     return users
+
 
 def load_user_profiles(search_key=None, search_value=None):
     try:
@@ -40,6 +41,7 @@ def load_user_profiles(search_key=None, search_value=None):
 
     return users
 
+
 def search_user_profile(search_key, search_value):
     try:
         with open(user_file_path, 'r') as user_information: #open JSON file in read mode
@@ -53,6 +55,7 @@ def search_user_profile(search_key, search_value):
             results[entry_id] = user_data
 
     return results
+
 
 def update_user_profile(username, updated_data):
     try:
@@ -71,12 +74,14 @@ def update_user_profile(username, updated_data):
     else:
         print("User not found. No updates made.")
 
+
 def verify_user_profile(search_key, search_value):
     results = search_user_profile(search_key, search_value)
     if results:
         return True
     else:
         return False
+
     
 def save_meal_plan(meal_plan_data, user_id):
     try:
@@ -94,6 +99,7 @@ def save_meal_plan(meal_plan_data, user_id):
 
     print("Successfully added meal plan information to the dictionary")
     return meal_plans
+
 
 def get_meal_plans_by_user(user_id):
     try:

@@ -7,8 +7,6 @@ from google import genai
 from config import GEMINI_MODEL, MAX_RETRIES
 from manager.ai_handler_manager import parse_response
 
-
-
 load_dotenv()  # Load environment variables from .env file
 
 logging.basicConfig(
@@ -20,10 +18,8 @@ logger = logging.getLogger(__name__)
 
 
 # Build AI Prompt
-
 def build_prompt(input_record):
     # Build the prompt using validated data from io_manager
-
     prompt = f"""
 You are the meal recommendation engine for Calora, a Singapore-based personalised meal planning application.
 
@@ -212,6 +208,7 @@ Use exactly the following structure:
 """
 # Returns the completed prompt so it can be sent to the AI API
     return prompt
+
 
 def call_ai(input_record):
     """

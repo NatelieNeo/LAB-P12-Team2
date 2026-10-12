@@ -1,51 +1,6 @@
-"""
-logic_manager.py — Logic Layer (Calora)
-
-Responsibilities:
-- Calculate the user's BMR -> TDEE -> daily calorie target -> per-meal
-  calorie/macro targets from the profile io_manager.py collects.
-- Take the AI's raw `recommendations` list — the shape ai_manager.py's
-  Gemini prompt actually returns (see ai_response.json): meal_type,
-  meal_name, meal_source_type, calories, protein_g, carbs_g, fat_g,
-  estimated_cost, ingredients as [{item, quantity, unit}, ...],
-  pantry_ingredients_used, portion_size, recipe_steps — and turn it into
-  ONE ranked meal plan: one dish for breakfast, one for lunch, one for
-  dinner (the "Snack" meal_type in a 10-dish response is not one of the
-  three slots and is dropped, never forced into one).
-- Apply the business rules, in order: dietary safety (hard filter) ->
-  meal-source preference (hard filter) -> rank by nutrition fit
-  (calorie-fit distance, then macro-fit distance) with cost as the
-  secondary factor, breaking ties between otherwise-equally-good options.
-- Tag every CHOSEN dish deterministically (calorie range, calorie-fit,
-  protein/carbs/fat tier, cost tier) using the fixed thresholds below —
-  never by asking the AI to self-categorize, so the same numbers always
-  produce the same tags on every run.
-
-100% procedural — no classes anywhere in this file, only functions and
-plain dicts/lists. This file never calls print()/input() (that's
-io_manager.py's job) and never calls the AI API (that's ai_manager.py's
-job) — it only transforms the AI's recommendations into a plan and
-hands back plain dicts for io_manager.py to display and data_manager.py
-to persist.
-
-Expected user_profile shape (built in main.py from io_manager.py's
-collectors):
-    {
-        "name": str, "age": int, "gender": str, "weight_kg": float,
-        "height_cm": float, "activity_level": str, "goal": str,
-        "dietary_restrictions": list[str], "meal_preference": str,
-        "meal_source": str,          # "eat_out" | "home_cooked" | "both"
-        "pantry_ingredients": list[str],
-        "daily_budget": float | None,
-    }
-
-Public entry point: build_meal_plan(recommendations, user_profile).
-  
-  """
-
 from typing import Any, Dict, List, Optional
 
-# Fixed assumption: exactly 3 meals a day (breakfast/lunch/dinner). A
+# Fixed assumption: exactly 3 meals a day (breakfast/lunch/dinner).
 # "Snack" or any other meal_type the AI returns is not one of these
 # three slots and is excluded from the plan, not merged into one.
 MEAL_SLOTS = ["breakfast", "lunch", "dinner"]
@@ -83,6 +38,7 @@ MACRO_SPLITS = {
     "gain": {"protein": 0.35, "carbs": 0.40, "fat": 0.25},
 }
 
+
 def calculate_bmr(gender: str, weight_kg: float, height_cm: float, age: int) -> float:
     """Mifflin-St Jeor BMR formula. Case-insensitive on gender so an
     unnormalized value ("Male", "MALE") never silently falls through to
@@ -119,6 +75,7 @@ def calculate_macro_targets(calorie_amount: float, goal: str) -> Dict[str, float
         "fat_g": round((calorie_amount * split["fat"]) / 9, 1),
     }
 
+
 def calculate_targets(user_profile: Dict[str, Any]) -> Dict[str, Any]:
     """Run the full BMR -> TDEE -> daily target -> per-meal target/macros
     pipeline for one user_profile. This is the single source of truth
@@ -144,7 +101,6 @@ def calculate_targets(user_profile: Dict[str, Any]) -> Dict[str, Any]:
 # ---------------------------------------------------------------------
 # Normalizing the AI's raw recommendation shape
 # ---------------------------------------------------------------------
-
 def get_ingredient_names(ingredients: Optional[List[Any]]) -> List[str]:
     """Reduce the AI's ingredients list — each entry either a plain
     string or a {"item": ..., "quantity": ..., "unit": ...} object (the
@@ -177,7 +133,6 @@ def group_candidates_by_slot(recommendations: List[Dict[str, Any]]) -> Dict[str,
 # ---------------------------------------------------------------------
 # Business rules (applied within one meal slot's candidates)
 # ---------------------------------------------------------------------
-
 def apply_dietary_safety_rule(
     candidates: List[Dict[str, Any]], dietary_restrictions: List[str]
 ) -> List[Dict[str, Any]]:
@@ -198,6 +153,7 @@ def apply_dietary_safety_rule(
             safe.append(candidate)
     return safe
 
+
 def apply_source_preference_rule(
     candidates: List[Dict[str, Any]], meal_source_preference: str
 ) -> List[Dict[str, Any]]:
@@ -207,10 +163,12 @@ def apply_source_preference_rule(
         return candidates
     return [c for c in candidates if c.get("meal_source_type") == meal_source_preference]
 
+
 def calculate_calorie_distance(candidate: Dict[str, Any], per_meal_calorie_target: float) -> float:
     """Absolute difference between a candidate's calories and the
     per-meal target. Lower is a better fit."""
     return abs(candidate.get("calories", 0) - per_meal_calorie_target)
+
 
 def calculate_macro_distance(candidate: Dict[str, Any], macro_targets: Dict[str, float]) -> float:
     """Sum of absolute gram differences between a candidate's macros and
@@ -222,6 +180,7 @@ def calculate_macro_distance(candidate: Dict[str, Any], macro_targets: Dict[str,
     fat_diff = abs(candidate.get("fat_g", 0) - macro_targets.get("fat_g", 0))
     return protein_diff + carbs_diff + fat_diff
 
+
 def cost_component(candidate: Dict[str, Any]) -> float:
     """A candidate with an unknown (None) estimated_cost is ranked last
     on cost, not treated as free — `cost or float("inf")` would be wrong
@@ -229,6 +188,7 @@ def cost_component(candidate: Dict[str, Any]) -> float:
     otherwise be mistaken for "unknown"."""
     cost = candidate.get("estimated_cost")
     return float("inf") if cost is None else cost
+
 
 def rank_slot_candidates(
     candidates: List[Dict[str, Any]],
@@ -279,13 +239,11 @@ def select_top_candidate(ranked_candidates: List[Dict[str, Any]]) -> Optional[Di
     has no usable candidates left after the business rules."""
     return ranked_candidates[0] if ranked_candidates else None
   
-  
 # ---------------------------------------------------------------------
 # Deterministic output tags
 # ---------------------------------------------------------------------
 # Computed by OUR code from the AI's numeric output — never by asking
 # the AI to self-categorize. Same numeric input -> same tag, every time.
-
 def tag_calorie_range(calories: float) -> str:
     """Absolute per-dish calorie bracket (category 1)."""
     if calories < 400:
@@ -380,11 +338,9 @@ def annotate_meal(
         "pantry_ingredients_used": find_pantry_ingredients_used(candidate.get("ingredients"), pantry_ingredients),
     }
 
-
 # ---------------------------------------------------------------------
 # Whole-plan assembly
 # ---------------------------------------------------------------------
-
 def build_plan_explanation(
     total_calories: float,
     daily_calorie_target: float,
