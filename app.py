@@ -4,7 +4,7 @@ from html import escape
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs
 
-from logic_manager import build_input_record, generate_plan
+from manager.logic_manager import build_input_record, generate_plan
 
 HOST = "127.0.0.1"
 PORT = 8000

@@ -8,8 +8,8 @@ import json
 
 import pytest
 
-import ai_handler_manager as handler
-import logic_manager as logic
+import manager.ai_handler_manager as handler
+import manager.logic_manager as logic
 
 
 def meal(slot="Breakfast", name="Eggs on Toast", calories=400, cost=2.5, **changes):

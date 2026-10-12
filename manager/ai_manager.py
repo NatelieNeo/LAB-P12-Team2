@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from google import genai
 
 from config import GEMINI_MODEL, MAX_RETRIES
-from ai_handler_manager import parse_response
+from manager.ai_handler_manager import parse_response
 
 
 

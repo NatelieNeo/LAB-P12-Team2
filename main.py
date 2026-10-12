@@ -1,8 +1,8 @@
 # Connects the IO layer to the AI layer
-from io_manager import collect_user_input
-from ai_manager import call_ai
-from ai_handler_manager import parse_response
-from data_manager import save_user_input
+from manager.io_manager import collect_user_input
+from manager.ai_manager import call_ai
+from manager.ai_handler_manager import parse_response
+from manager.data_manager import save_user_input
 
 def main():
 
