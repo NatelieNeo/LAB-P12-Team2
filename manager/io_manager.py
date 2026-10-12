@@ -154,7 +154,7 @@ def get_meal_preference(): #dynamic: user's meal preference
         if meal_preference.isdigit():
             print("You've entered an integer, Please enter a valid string.")
         else:
-            print("Yum! ", meal_preference, " sounds good.")
+            print("Yum!", meal_preference, "sounds good.")
             return meal_preference        
 
 
