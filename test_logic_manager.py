@@ -106,7 +106,7 @@ def test_parse_validate_and_build_happy_path(response, profile):
 
     assert plan["total_cost"] == 10.5
     assert plan["within_budget"] is True  # Equality is within budget.
-    assert plan["meals"]["dinner"]["pantry_ingredients_used"] == ["chicken", "rice"]
+    assert plan["meals"]["dinner"]["pantry_ingredients_used"] == ["150g chicken breast", "1 cup cooked rice"]
     assert response == original
     assert profile == original_profile
 
@@ -317,7 +317,7 @@ def test_pantry_matching_and_exact_annotation():
         "calorie_range": "Moderate (400-700 kcal)", "calorie_tag": "on_target",
         "protein_tag": "Medium (10-25g)", "carbs_tag": "Medium (15-40g)",
         "fat_tag": "Medium (5-15g)", "cost_tier": "Budget (<$15)",
-        "pantry_ingredients_used": ["CHICKEN", "rice"],
+        "pantry_ingredients_used": ["150g Chicken breast", {"item": "rice"}]
     }
 
 
@@ -332,7 +332,7 @@ def test_empty_partial_and_fully_filtered_plans(profile):
     assert plan["missing_slots"] == ["lunch", "dinner"]
     text = logic.format_meal_plan(plan)
     assert "Breakfast: Eggs on Toast (home_cooked)" in text
-    assert "Uses from your pantry: eggs" in text
+    assert "Uses from your pantry: 2 eggs" in text
     assert "Missing meals: lunch, dinner" in text
     assert "Lunch:" not in text
 
