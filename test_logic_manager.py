@@ -10,6 +10,7 @@ import pytest
 import manager.ai_handler_manager as handler
 import manager.logic_manager as logic
 
+
 # sample user details for calculating targets and choosing meals
 # fixture provides reusable sample data for the tests.
 # each test using this fixture gets fresh data, so changes made in one test won't affect another test
@@ -22,6 +23,7 @@ def user_profile():
         "meal_source": "both", "pantry_ingredients": ["eggs", "chicken", "rice"],
         "daily_budget": 10.5,
     }
+
 
 # created sample meal data for the tests
 def meal(slot="Breakfast", name="Eggs on Toast", calories=400, cost=2.5, **changes):
@@ -36,6 +38,7 @@ def meal(slot="Breakfast", name="Eggs on Toast", calories=400, cost=2.5, **chang
     }
     result.update(changes)
     return result
+
 
 # sample AI response with 10 meal recommendations
 @pytest.fixture
@@ -68,6 +71,7 @@ def response():
             meal("Lunch", "Vegetable Rice Bowl", 650, 4),
         ],
     }
+
 
 # sample user details for calculating targets and choosing meals
 @pytest.fixture
@@ -105,6 +109,7 @@ def test_parse_validate_and_build_happy_path(response, profile):
     assert plan["meals"]["dinner"]["pantry_ingredients_used"] == ["chicken", "rice"]
     assert response == original
     assert profile == original_profile
+
 
 # running the same test once for each value listed below
 # lets us check several inputs without repeating the test code
@@ -384,6 +389,7 @@ def test_unvalidated_logic_inputs_raise_existing_exceptions(profile):
         logic.apply_dietary_safety_rule([meal()], [123])
     with pytest.raises(KeyError):
         logic.format_meal_plan({})
+
 
 # Run this file's tests when the file is executed directly
 # -q keeps the output short.

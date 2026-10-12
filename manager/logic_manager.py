@@ -463,7 +463,7 @@ def format_meal_plan(plan):
 
         pantry = meal.get("pantry_ingredients_used", [])
         if pantry:
-            lines.append(f"Uses from your pantry: {', '.join(pantry)}")
+            lines.append(f"Uses from your pantry: {pantry}")
 
         lines.append(f"Cost: {meal['cost_tier']}")
 

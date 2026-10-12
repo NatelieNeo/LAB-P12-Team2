@@ -263,7 +263,9 @@ def call_ai(input_record):
                 model=GEMINI_MODEL,
                 contents=prompt,
                 config={
-                    "response_mime_type": "application/json"
+                    "response_mime_type": "application/json",
+                    "temperature": 1,
+                    "seed": 42
                 }
             )
 
