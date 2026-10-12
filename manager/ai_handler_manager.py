@@ -3,6 +3,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def validate_nutrition_targets(targets):
     if not isinstance(targets, dict):
         return False
@@ -22,6 +23,7 @@ def validate_nutrition_targets(targets):
             return False
 
     return True
+
 
 def validate_recommendation(recommendation):
     if not isinstance(recommendation, dict):
@@ -84,6 +86,7 @@ def validate_recommendation(recommendation):
 
     return True
 
+
 def validate_recommendations(recommendations):
     if not isinstance(recommendations, list):
         return False
@@ -96,6 +99,7 @@ def validate_recommendations(recommendations):
             return False
 
     return True
+
 
 def validate_response(data):
     if not isinstance(data, dict):
@@ -120,6 +124,7 @@ def validate_response(data):
         return False
 
     return True
+
 
 def parse_response(response_text):
     """
