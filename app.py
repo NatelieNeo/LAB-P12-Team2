@@ -1,102 +1,246 @@
-"""Dependency-free web app for displaying the logic manager's meal plan."""
+"""Flask web application for Calora's meal planner."""
 
-from html import escape
-from http.server import BaseHTTPRequestHandler, HTTPServer
-from urllib.parse import parse_qs
+import os
 
-from manager.logic_manager import build_input_record, generate_plan
+from flask import Flask, redirect, render_template, request, session, url_for
+
+from manager.ai_manager import call_ai
+from manager.data_manager import (
+    get_meal_plans_by_user,
+    load_user_profiles,
+    save_meal_plan,
+    save_user_profile,
+    update_user_profile,
+)
+from manager.logic_manager import build_meal_plan
 
 HOST = "127.0.0.1"
-PORT = 8000
+PORT = 8080
+app = Flask(__name__)
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "calora-development-key")
 
 
-def page(body: str) -> str:
-    return f"""<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Calora meal planner</title><style>
-:root {{ --ink: #20382f; --green: #28624d; --coral: #d56b48; --paper: #fffdf8; --line: #d7dfd4; --muted: #68766b; font-family: "Trebuchet MS", sans-serif; color: var(--ink); background: #f4efe4; }}
-* {{ box-sizing: border-box; }} body {{ margin: 0; background: radial-gradient(circle at 90% 0%, #f5d5bd 0, transparent 30%), linear-gradient(135deg, #f4efe4, #dfece2); min-height: 100vh; }}
-main {{ max-width: 1100px; margin: auto; padding: 36px 22px 64px; }}
-.brand {{ display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 60px; }} .mark {{ color: var(--coral); font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }} .date {{ color: var(--muted); font-size: .9rem; }}
-h1 {{ color: var(--green); font-family: Georgia, serif; font-size: clamp(2.8rem, 7vw, 6rem); font-weight: 400; letter-spacing: 0; line-height: .92; margin: 0 0 18px; max-width: 760px; }}
-h2 {{ color: var(--green); font-family: Georgia, serif; font-size: 1.65rem; font-weight: 400; margin: 0 0 12px; }} h3 {{ font-family: Georgia, serif; font-weight: 400; }}
-.lede {{ color: var(--muted); font-size: 1.08rem; line-height: 1.6; max-width: 650px; }}
-form, .summary, .meal {{ background: rgba(255, 253, 248, .88); border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 14px 32px rgba(47, 73, 56, .06); }}
-form {{ display: grid; grid-template-columns: repeat(12, 1fr); gap: 18px; margin: 34px 0; padding: 28px; }} .group-title {{ grid-column: 1 / -1; border-bottom: 1px solid var(--line); color: var(--green); font-family: Georgia, serif; font-size: 1.35rem; padding-bottom: 10px; }}
-label {{ display: grid; gap: 7px; font-size: .85rem; font-weight: 700; grid-column: span 3; }} label.wide {{ grid-column: span 6; }}
-input, select, button {{ background: #fffefb; color: var(--ink); font: inherit; padding: 12px; border: 1px solid #b8c9bc; border-radius: 4px; }} input:focus, select:focus {{ border-color: var(--coral); outline: 3px solid rgba(213, 107, 72, .15); }}
-button {{ grid-column: 1 / -1; background: var(--coral); color: white; border: 0; cursor: pointer; font-weight: 700; margin-top: 8px; padding: 14px; transition: transform .2s, background .2s; }} button:hover {{ background: #b95537; transform: translateY(-2px); }}
-.summary {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; overflow: hidden; margin: 26px 0 34px; }} .summary div {{ background: var(--paper); padding: 20px; }} .summary strong {{ display: block; color: var(--green); font-family: Georgia, serif; font-size: 1.65rem; font-weight: 400; margin-bottom: 4px; }}
-.meals {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }} .meal {{ padding: 22px; }} .meal h3 {{ color: var(--coral); font-size: 1.3rem; margin: 0 0 20px; text-transform: capitalize; }}
-.detail {{ border-top: 1px solid var(--line); line-height: 1.5; margin: 0; padding: 11px 0; }} .pantry, .notice {{ background: #fff0cc; padding: 11px 13px; border-left: 4px solid var(--coral); line-height: 1.5; }}
-.muted {{ color: var(--muted); font-family: "Trebuchet MS", sans-serif; font-size: .82rem; }} a {{ color: var(--green); font-weight: bold; }}
-@media (max-width: 760px) {{ .brand {{ margin-bottom: 42px; }} form {{ grid-template-columns: repeat(2, 1fr); padding: 20px; }} label, label.wide {{ grid-column: span 1; }} label.wide, .group-title, button {{ grid-column: 1 / -1; }} .meals {{ grid-template-columns: 1fr; }} }}
-@media (max-width: 480px) {{ main {{ padding: 24px 15px 42px; }} .brand {{ align-items: flex-start; flex-direction: column; gap: 6px; }} form {{ display: block; }} label {{ margin-bottom: 15px; }} .summary {{ grid-template-columns: 1fr; }} }}
-</style></head><body><main>{body}</main></body></html>"""
-
-
-def render_form() -> str:
-    return """<header class="brand"><span class="mark">Calora / daily table</span><span class="date">A gentler way to plan today</span></header>
-<h1>Let's plan today's meals.</h1>
-<p class="lede">A thoughtful meal plan shaped around your body, your budget, and what you already have in the kitchen.</p>
-<form method="post" action="/plan">
-<div class="group-title">Your profile</div>
-<label>Age<input name="age" type="number" min="1" value="25" required></label>
-<label>Gender<select name="gender"><option>female</option><option>male</option></select></label>
-<label>Height (cm)<input name="height_cm" type="number" value="165" required></label>
-<label>Weight (kg)<input name="weight_kg" type="number" value="65" required></label>
-<label>Activity level<select name="activity_level"><option>sedentary</option><option>light</option><option selected>moderate</option><option>active</option><option>very_active</option></select></label>
-<label>Goal<select name="goal"><option selected>lose</option><option>maintain</option><option>gain</option></select></label>
-<label>Target calories<input name="target_calories" type="number" placeholder="Press Enter to skip"></label>
-<div class="group-title">Today's preferences</div>
-<label>Restrictions/allergies<input name="restrictions" placeholder="e.g. prawn"></label>
-<label class="wide">Cravings / food type<input name="cravings" value="western"></label>
-<label>Meal source<select name="meal_source"><option>eat_out</option><option>home_cooked</option><option selected>both</option></select></label>
-<label class="wide">Ingredients on hand<input name="ingredients" value="pasta, garlic, potato, chicken, lettuce, cucumber"></label>
-<label>Daily budget<input name="budget" type="number" min="1" step="0.01" value="20"></label>
-<button type="submit">Build today's meal plan &rarr;</button></form>"""
-
-
-def render_plan(result: dict) -> str:
-    data = result["data"]
-    cards = "".join(
-        f"""<article class="meal"><h3>{escape(str(meal['slot']))}: {escape(str(meal['name']))} <span class="muted">({escape(str(meal['source']))})</span></h3>
-<p class="detail"><strong>Calories:</strong> {escape(str(meal['calories']))} - {escape(str(meal['calorie_status']))}</p>
-<p class="detail"><strong>Macros:</strong> Protein {escape(str(meal['protein']))} / Carbs {escape(str(meal['carbs']))} / Fat {escape(str(meal['fat']))}</p>
-{f'<p class="pantry"><strong>Uses from your pantry:</strong> {escape(", ".join(meal["pantry"]))}</p>' if meal.get("pantry") else ''}
-<p class="detail"><strong>Cost:</strong> {escape(str(meal['cost_label']))}</p></article>"""
-        for meal in data["meals"]
+def render_form(
+    profile: dict | None = None,
+    message: str = "",
+    action: str = "/plan",
+    submit_label: str = "Build today's meal plan →",
+    include_profile: bool = True,
+    include_preferences: bool = True,
+) -> str:
+    """Render the shared profile and preferences form."""
+    return render_template(
+        "form.html",
+        profile=profile or {},
+        message=message,
+        action=action,
+        submit_label=submit_label,
+        include_profile=include_profile,
+        include_preferences=include_preferences,
     )
-    notice = f"<p class=\"notice\">{escape(result['notice'])}. Showing the local logic result.</p>" if result.get("notice") else ""
-    return f"""<header class="brand"><span class="mark">Calora / daily table</span><span class="date">Your plan is ready</span></header>
-<h1>Your meal plan</h1><p class="lede">Generated by {escape(result['source'])}. Here is the shape of your day, one satisfying plate at a time.</p>{notice}
-<section class="summary"><div><strong>{data['total_calories']} kcal</strong>total calories</div><div><strong>{data['total_cost']:.2f}</strong>estimated cost</div><div><strong>{escape(str(data['daily_target']))} kcal</strong>daily target</div></section>
-<h2>Why this plan</h2><p>{escape(data['why'])}</p><section class="meals">{cards}</section>
-<p>Summary: {data['saved_count']} past meal plan(s) saved</p><p><a href="/">Create another plan</a></p>"""
 
 
-class CaloraHandler(BaseHTTPRequestHandler):
-    def send_page(self, content: str) -> None:
-        payload = page(content).encode("utf-8")
-        self.send_response(200)
-        self.send_header("Content-Type", "text/html; charset=utf-8")
-        self.send_header("Content-Length", str(len(payload)))
-        self.end_headers()
-        self.wfile.write(payload)
+def build_input_record(form_data: dict[str, str]) -> dict:
+    """Convert browser form values into the shape used by the project layers."""
+    restrictions = [
+        item.strip()
+        for item in form_data.get("dietary_restrictions", "").split(",")
+        if item.strip()
+    ]
+    if restrictions == ["nil"]:
+        restrictions = []
+    pantry = [
+        item.strip()
+        for item in form_data.get("ingredients", "").split(",")
+        if item.strip()
+    ]
+    gender = {"M": "male", "F": "female"}.get(form_data["gender"], form_data["gender"])
+    activity_level = {
+        "moderately active": "moderate",
+        "very active": "very_active",
+    }.get(form_data["activity_level"], form_data["activity_level"])
+    meal_source = {"in": "home_cooked", "out": "eat_out"}.get(
+        form_data.get("meal_source", "both"), form_data.get("meal_source", "both")
+    )
+    return {
+        "username": form_data["username"].strip(),
+        "name": form_data["name"].strip(),
+        "age": int(form_data["age"]),
+        "gender": gender,
+        "weight_kg": float(form_data["weight_kg"]),
+        "height_cm": float(form_data["height_cm"]),
+        "activity_level": activity_level,
+        "goal": form_data["goal"],
+        "dietary_restrictions": restrictions,
+        "meal_preference": form_data.get("meal_preference", "").strip(),
+        "meal_source": meal_source,
+        "pantry_ingredients": pantry,
+        "daily_budget": float(form_data["budget"]) if form_data.get("budget") else None,
+    }
 
-    def do_GET(self) -> None:
-        self.send_page(render_form())
 
-    def do_POST(self) -> None:
-        length = int(self.headers.get("Content-Length", 0))
-        values = parse_qs(self.rfile.read(length).decode("utf-8"))
-        form_data = {key: value[0] for key, value in values.items()}
-        self.send_page(render_plan(generate_plan(build_input_record(form_data))))
+def generate_plan(input_record: dict) -> dict | None:
+    ai_output = call_ai(input_record)
+    if ai_output is None:
+        return None
+    return build_meal_plan(ai_output.get("recommendations", []), input_record)
 
-    def log_message(self, format: str, *args) -> None:
-        return
+
+def profile_for_username(username: str) -> dict | None:
+    matches = load_user_profiles("username", username.strip())
+    if not matches:
+        return None
+    return next(iter(matches.values()))
+
+
+def profile_form_values(profile: dict) -> dict:
+    values = dict(profile)
+    restrictions = profile.get("dietary_restrictions", "")
+    if isinstance(restrictions, list):
+        restrictions = ", ".join(restrictions)
+    values["dietary_restrictions"] = restrictions
+    values["budget"] = profile.get("daily_budget", "")
+    values["meal_preference"] = profile.get("meal_preference", "")
+    values["ingredients"] = ", ".join(profile.get("pantry_ingredients", []))
+    values["gender"] = {"male": "M", "female": "F"}.get(profile.get("gender"), profile.get("gender", ""))
+    values["activity_level"] = {
+        "moderate": "moderately active",
+        "very_active": "very active",
+    }.get(profile.get("activity_level"), profile.get("activity_level", ""))
+    values["meal_source"] = {"home_cooked": "in", "eat_out": "out"}.get(
+        profile.get("meal_source"), profile.get("meal_source", "both")
+    )
+    return values
+
+
+def save_or_update_profile(input_record: dict) -> None:
+    username = input_record["username"]
+    if profile_for_username(username) is None:
+        save_user_profile(input_record)
+    else:
+        update_user_profile(username, input_record)
+
+
+@app.get("/")
+def index() -> str:
+    username = session.get("username")
+    if not username:
+        return render_template("welcome.html")
+    profile = profile_for_username(username)
+    if profile is None:
+        session.clear()
+        return render_template("welcome.html", message="Your profile could not be found. Please sign in again.")
+    return render_form(profile_form_values(profile), include_profile=False)
+
+
+@app.post("/login")
+def login() -> str:
+    username = request.form.get("username", "").strip()
+    if not username:
+        return render_template("welcome.html", message="Please enter a username."), 400
+    loaded = profile_for_username(username)
+    session["username"] = username
+    if loaded is None:
+        return render_form(
+            {"username": username},
+            "No profile exists yet. Complete your details to create one.",
+            action="/profile/create",
+            submit_label="Create profile",
+            include_preferences=False,
+        )
+    return redirect(url_for("profile"))
+
+
+@app.post("/plan")
+def plan() -> str:
+    username = session.get("username")
+    if not username:
+        return redirect(url_for("index"))
+    profile = profile_for_username(username)
+    if profile is None:
+        session.clear()
+        return redirect(url_for("index"))
+    form_data = profile_form_values(profile)
+    form_data.update(request.form.to_dict())
+    form_data["username"] = username
+    input_record = build_input_record(form_data)
+    save_or_update_profile(input_record)
+    result = generate_plan(input_record)
+    if result is None:
+        return render_template("error.html", message="Unable to generate a meal plan right now."), 503
+    save_meal_plan(result, input_record["username"])
+    return render_template("plan.html", result=result, show_actions=True)
+
+
+@app.post("/profile/create")
+def create_profile() -> str:
+    input_record = build_input_record(request.form.to_dict())
+    if profile_for_username(input_record["username"]) is not None:
+        return render_template("welcome.html", message="That username already exists. Please sign in.")
+    save_user_profile(input_record)
+    session["username"] = input_record["username"]
+    return redirect(url_for("profile"))
+
+
+@app.get("/profile")
+def profile() -> str:
+    username = session.get("username")
+    if not username:
+        return redirect(url_for("index"))
+    loaded = profile_for_username(username)
+    if loaded is None:
+        session.clear()
+        return redirect(url_for("index"))
+    return render_template("profile.html", profile=profile_form_values(loaded))
+
+
+@app.get("/profile/edit")
+def edit_profile() -> str:
+    username = session.get("username")
+    loaded = profile_for_username(username) if username else None
+    if loaded is None:
+        session.clear()
+        return redirect(url_for("index"))
+    return render_form(
+        profile_form_values(loaded),
+        action="/profile/update",
+        submit_label="Save profile changes",
+        include_preferences=False,
+    )
+
+
+@app.post("/profile/update")
+def update_profile() -> str:
+    username = session.get("username")
+    if not username:
+        return redirect(url_for("index"))
+    form_data = profile_form_values(profile_for_username(username) or {})
+    form_data.update(request.form.to_dict())
+    form_data["username"] = username
+    input_record = build_input_record(form_data)
+    if profile_for_username(input_record["username"]) is None:
+        session.clear()
+        return redirect(url_for("index"))
+    update_user_profile(input_record["username"], input_record)
+    return render_template("profile.html", profile=profile_form_values(input_record), message="Profile updated successfully.")
+
+
+@app.get("/plans")
+def plans() -> str:
+    username = session.get("username")
+    if not username or profile_for_username(username) is None:
+        session.clear()
+        return redirect(url_for("index"))
+    meal_plans = list(get_meal_plans_by_user(username).values())
+    return render_template("history.html", username=username, meal_plans=meal_plans)
+
+
+@app.post("/logout")
+def logout() -> str:
+    session.clear()
+    return redirect(url_for("index"))
 
 
 if __name__ == "__main__":
     print(f"Calora is running at http://{HOST}:{PORT}")
-    HTTPServer((HOST, PORT), CaloraHandler).serve_forever()
+    app.run(host=HOST, port=PORT, debug=True)
