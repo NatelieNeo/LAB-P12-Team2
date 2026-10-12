@@ -1,6 +1,5 @@
-"""Offline tests for Calora. Save beside main.py; run python -m pytest -q.
-
-These tests describe CURRENT behavior, including validation limitations.
+"""Offline tests for Calora.
+These tests describe current behavior, including validation limitations.
 Only pure modules are imported: no Gemini SDK, dotenv, API key, or data files.
 """
 import copy
@@ -11,9 +10,22 @@ import pytest
 import manager.ai_handler_manager as handler
 import manager.logic_manager as logic
 
+# sample user details for calculating targets and choosing meals
+# fixture provides reusable sample data for the tests.
+# each test using this fixture gets fresh data, so changes made in one test won't affect another test
+@pytest.fixture
+def user_profile():
+    return {
+        "name": "Nisha", "age": 21, "gender": "female", "weight_kg": 52,
+        "height_cm": 165, "activity_level": "sedentary", "goal": "maintain",
+        "dietary_restrictions": [], "meal_preference": "rice dishes",
+        "meal_source": "both", "pantry_ingredients": ["eggs", "chicken", "rice"],
+        "daily_budget": 10.5,
+    }
 
+# created sample meal data for the tests
 def meal(slot="Breakfast", name="Eggs on Toast", calories=400, cost=2.5, **changes):
-    """Hardcoded Gemini-style recommendation with the exact expected fields."""
+    #hardcoded Gemini-style recommendation with the exact expected fields
     result = {
         "meal_type": slot, "meal_name": name, "meal_source_type": "home_cooked",
         "calories": calories, "protein_g": 25, "carbs_g": 40, "fat_g": 15,
@@ -25,16 +37,18 @@ def meal(slot="Breakfast", name="Eggs on Toast", calories=400, cost=2.5, **chang
     result.update(changes)
     return result
 
-
+# sample AI response with 10 meal recommendations
 @pytest.fixture
 def response():
-    # Ten realistic options; sample data is independent of saved project files.
+    # ten realistic options
     return {
         "estimated_nutrition_targets": {
             "calorie_target": 1650, "protein_target_g": 90,
             "carb_target_g": 185, "fat_target_g": 55,
         },
         "recommendations": [
+# created a sample meal instead of requesting one from Gemini
+# tests can change details such as calories, cost or ingredients to check how the program handles different situations
             meal(),
             meal("Lunch", "Chicken Rice", 500, 4.5, meal_source_type="eat_out",
                  pantry_ingredients_used=[], ingredients=[], recipe_steps=[]),
@@ -55,7 +69,7 @@ def response():
         ],
     }
 
-
+# sample user details for calculating targets and choosing meals
 @pytest.fixture
 def profile():
     return {
@@ -68,6 +82,7 @@ def profile():
 
 
 def test_parse_validate_and_build_happy_path(response, profile):
+    # kept copies to check that the original inputs aren't changed
     original = copy.deepcopy(response)
     original_profile = copy.deepcopy(profile)
     parsed = handler.parse_response(" \n" + json.dumps(response) + "\t ")
@@ -80,14 +95,19 @@ def test_parse_validate_and_build_happy_path(response, profile):
         "breakfast": "Eggs on Toast", "lunch": "Chicken Rice",
         "dinner": "Chicken and Rice Bowl",
     }
-    assert plan["daily_calorie_target"] == pytest.approx(1542.3)
+    assert plan["daily_calorie_target"] == pytest.approx(1542.3) #decimal calculations can have tiny rounding differences approx checks that the result is close to the expected value.
     assert plan["total_calories"] == 1420
+
+    # a plan exactly at the budget should still be allowed.
+
     assert plan["total_cost"] == 10.5
     assert plan["within_budget"] is True  # Equality is within budget.
     assert plan["meals"]["dinner"]["pantry_ingredients_used"] == ["chicken", "rice"]
-    assert response == original and profile == original_profile
+    assert response == original
+    assert profile == original_profile
 
-
+# running the same test once for each value listed below
+# lets us check several inputs without repeating the test code
 @pytest.mark.parametrize("text", [None, "", " \n\t", "{", '{"recommendations":}',
                                      "null", "[]", "{}", "not JSON"])
 def test_invalid_response_returns_none_and_logs(text):
@@ -108,7 +128,7 @@ def test_parser_rejects_fences_and_prose(response, wrapper):
 
 @pytest.mark.parametrize("value", [123, {"recommendations": []}, [1]])
 def test_non_text_parser_input_raises_type_error(value):
-    # parse_response catches JSONDecodeError, not TypeError.
+    #non-text input should raise a TypeError
     with pytest.raises(TypeError):
         handler.parse_response(value)
 
@@ -365,6 +385,7 @@ def test_unvalidated_logic_inputs_raise_existing_exceptions(profile):
     with pytest.raises(KeyError):
         logic.format_meal_plan({})
 
-
+# Run this file's tests when the file is executed directly
+# -q keeps the output short.
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))
