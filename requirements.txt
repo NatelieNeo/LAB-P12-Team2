@@ -1,3 +1,4 @@
 dotenv
 google-genai
 Flask
+pytest==9.1.1
