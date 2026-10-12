@@ -335,7 +335,7 @@ def annotate_meal(
         "carbs_tag": tag_carbs(candidate.get("carbs_g", 0)),
         "fat_tag": tag_fat(candidate.get("fat_g", 0)),
         "cost_tier": tag_cost(candidate.get("estimated_cost")),
-        "pantry_ingredients_used": find_pantry_ingredients_used(candidate.get("ingredients"), pantry_ingredients),
+        "pantry_ingredients_used": candidate.get("ingredients")
     }
 
 # ---------------------------------------------------------------------
@@ -463,7 +463,7 @@ def format_meal_plan(plan):
 
         pantry = meal.get("pantry_ingredients_used", [])
         if pantry:
-            lines.append(f"Uses from your pantry: {pantry}")
+            lines.append(f"Uses from your pantry: {', '.join(pantry)}")
 
         lines.append(f"Cost: {meal['cost_tier']}")
 
