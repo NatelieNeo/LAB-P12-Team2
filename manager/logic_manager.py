@@ -380,25 +380,31 @@ def tag_calorie_fit(calories: float, per_meal_calorie_target: float, tolerance: 
 def tag_protein(protein_g: float) -> str:
     if protein_g < 10:
         return "Low (<10g)"
-    if protein_g <= 25:
-        return "Medium (10-25g)"
-    return "High (>25g)"
+    if protein_g <= 20:
+        return "Moderate (10-20g)"
+    if protein_g <= 30:
+        return "High (>20-30g)"
+    return "Very High (>30g)"
 
 
 def tag_carbs(carbs_g: float) -> str:
     if carbs_g < 15:
         return "Low (<15g)"
-    if carbs_g <= 40:
-        return "Medium (15-40g)"
-    return "High (>40g)"
+    if carbs_g <= 30:
+        return "Moderate (15-30g)"
+    if carbs_g <= 60:
+        return "High (>30-60g)"
+    return "Very High (>60g)"
 
 
 def tag_fat(fat_g: float) -> str:
     if fat_g < 5:
         return "Low (<5g)"
-    if fat_g <= 15:
-        return "Medium (5-15g)"
-    return "High (>15g)"
+    if fat_g <= 10:
+        return "Moderate (5-10g)"
+    if fat_g <= 20:
+        return "High (>10-20g)"
+    return "Very High (>20g)"
 
 
 def tag_cost(estimated_cost: Optional[float]) -> str:
@@ -406,11 +412,15 @@ def tag_cost(estimated_cost: Optional[float]) -> str:
     than guessed."""
     if estimated_cost is None:
         return "Unknown"
+    if estimated_cost < 5:
+        return "Budget (<$5)"
+    if estimated_cost < 10:
+        return "Moderate (<$10)"
     if estimated_cost < 15:
-        return "Budget (<$15)"
-    if estimated_cost <= 30:
-        return "Moderate ($15-$30)"
-    return "Premium (>$30)"
+        return "Moderate (<$15)"
+    if estimated_cost < 20:
+        return "High (<$20)"
+    return "Premium (>$20)"
 
 
 def find_pantry_ingredients_used(ingredients: Optional[List[Any]], pantry_ingredients: List[str]) -> List[str]:

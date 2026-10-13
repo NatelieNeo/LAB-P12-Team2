@@ -350,14 +350,19 @@ def test_requested_cuisine_does_not_override_better_nutrition_fit():
 @pytest.mark.parametrize("function,cases", [
     (logic.tag_calorie_range, [(399.99, "Low (<400 kcal)"), (400, "Moderate (400-700 kcal)"),
         (700, "Moderate (400-700 kcal)"), (700.01, "High (>700 kcal)")]),
-    (logic.tag_protein, [(9.99, "Low (<10g)"), (10, "Medium (10-25g)"),
-        (25, "Medium (10-25g)"), (25.01, "High (>25g)")]),
-    (logic.tag_carbs, [(14.99, "Low (<15g)"), (15, "Medium (15-40g)"),
-        (40, "Medium (15-40g)"), (40.01, "High (>40g)")]),
-    (logic.tag_fat, [(4.99, "Low (<5g)"), (5, "Medium (5-15g)"),
-        (15, "Medium (5-15g)"), (15.01, "High (>15g)")]),
-    (logic.tag_cost, [(None, "Unknown"), (0, "Budget (<$15)"), (14.99, "Budget (<$15)"),
-        (15, "Moderate ($15-$30)"), (30, "Moderate ($15-$30)"), (30.01, "Premium (>$30)")]),
+    (logic.tag_protein, [(9.99, "Low (<10g)"), (10, "Moderate (10-20g)"),
+        (20, "Moderate (10-20g)"), (20.01, "High (>20-30g)"),
+        (30, "High (>20-30g)"), (30.01, "Very High (>30g)")]),
+    (logic.tag_carbs, [(14.99, "Low (<15g)"), (15, "Moderate (15-30g)"),
+        (30, "Moderate (15-30g)"), (30.01, "High (>30-60g)"),
+        (60, "High (>30-60g)"), (60.01, "Very High (>60g)")]),
+    (logic.tag_fat, [(4.99, "Low (<5g)"), (5, "Moderate (5-10g)"),
+        (10, "Moderate (5-10g)"), (10.01, "High (>10-20g)"),
+        (20, "High (>10-20g)"), (20.01, "Very High (>20g)")]),
+    (logic.tag_cost, [(None, "Unknown"), (0, "Budget (<$5)"), (4.99, "Budget (<$5)"),
+        (5, "Moderate (<$10)"), (9.99, "Moderate (<$10)"),
+        (10, "Moderate (<$15)"), (14.99, "Moderate (<$15)"),
+        (15, "High (<$20)"), (19.99, "High (<$20)"), (20, "Premium (>$20)")]),
 ])
 def test_all_tag_boundaries(function, cases):
     for value, expected in cases:
@@ -381,8 +386,8 @@ def test_pantry_matching_and_exact_annotation():
     assert logic.annotate_meal(item, 500, pantry) == {
         "name": "Eggs on Toast", "source_type": "home_cooked",
         "calorie_range": "Moderate (400-700 kcal)", "calorie_tag": "on_target",
-        "protein_tag": "Medium (10-25g)", "carbs_tag": "Medium (15-40g)",
-        "fat_tag": "Medium (5-15g)", "cost_tier": "Budget (<$15)",
+        "protein_tag": "High (>20-30g)", "carbs_tag": "High (>30-60g)",
+        "fat_tag": "High (>10-20g)", "cost_tier": "Budget (<$5)",
         "pantry_ingredients_used": ["150g Chicken breast", {"item": "rice"}]
     }
 
@@ -484,8 +489,8 @@ def test_exact_explanation_and_full_plan_format(response, profile):
     text = logic.format_meal_plan(plan)
     assert text.startswith("=== Your Meal Plan ===\nWhy this plan: " + plan["explanation"])
     assert text.index("Breakfast:") < text.index("Lunch:") < text.index("Dinner:")
-    assert "Macros: Protein Medium (10-25g) / Carbs Medium (15-40g) / Fat Medium (5-15g)" in text
-    assert "Cost: Budget (<$15)" in text
+    assert "Macros: Protein High (>20-30g) / Carbs High (>30-60g) / Fat High (>10-20g)" in text
+    assert "Cost: Budget (<$5)" in text
     assert "Missing meals:" not in text
 
 

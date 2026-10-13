@@ -2,7 +2,7 @@
  "3c9491b2-eb59-437b-b6d7-382ff1da959c": {
   "username": "tim",
   "name": "timothy",
-  "age": 24,
+  "age": 23,
   "gender": "male",
   "weight_kg": 75.0,
   "height_cm": 180.0,
@@ -11,9 +11,9 @@
   "dietary_restrictions": [
    "fish"
   ],
-  "meal_preference": "sweet",
+  "meal_preference": "savoury",
   "meal_source": "both",
   "pantry_ingredients": [],
-  "daily_budget": 30.0
+  "daily_budget": 40.0
  }
 }

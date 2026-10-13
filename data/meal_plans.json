@@ -1,127 +1,177 @@
 {
- "398b30e4-6c8e-4233-9a25-59919bb5ba82": {
+ "34c7d563-5f29-4cd5-964e-b51eb357888b": {
   "meals": {
    "breakfast": {
-    "name": "Kimchi Chicken Fried Rice with Cheese",
+    "name": "Spicy Beef Fried Noodles",
     "source_type": "home_cooked",
     "calorie_range": "High (>700 kcal)",
     "calorie_tag": "on_target",
-    "protein_tag": "High (>25g)",
-    "carbs_tag": "High (>40g)",
-    "fat_tag": "High (>15g)",
-    "cost_tier": "Budget (<$15)",
+    "protein_tag": "Very High (>30g)",
+    "carbs_tag": "Very High (>60g)",
+    "fat_tag": "Very High (>20g)",
+    "cost_tier": "Moderate (<$10)",
     "pantry_ingredients_used": [
-     "150g rice",
-     "200g chicken breast",
-     "100g kimchi",
-     "50g carrot",
-     "30g cheese",
-     "10ml cooking oil"
+     "200g noodles",
+     "250g beef",
+     "3 tbsp chilli",
+     "15ml vegetable oil",
+     "2 cloves garlic",
+     "20ml soy sauce"
     ]
    },
    "lunch": {
-    "name": "Economical Rice with Chicken and Vegetables",
+    "name": "Spicy Beef Hor Fun",
     "source_type": "eat_out",
     "calorie_range": "High (>700 kcal)",
     "calorie_tag": "on_target",
-    "protein_tag": "High (>25g)",
-    "carbs_tag": "High (>40g)",
-    "fat_tag": "High (>15g)",
-    "cost_tier": "Budget (<$15)",
+    "protein_tag": "Very High (>30g)",
+    "carbs_tag": "Very High (>60g)",
+    "fat_tag": "Very High (>20g)",
+    "cost_tier": "Moderate (<$10)",
     "pantry_ingredients_used": []
    },
    "dinner": {
-    "name": "Spicy Chicken Stir-Fry Rice Bowl with Kimchi",
+    "name": "Spicy Beef Noodles Soup",
     "source_type": "home_cooked",
     "calorie_range": "High (>700 kcal)",
     "calorie_tag": "on_target",
-    "protein_tag": "High (>25g)",
-    "carbs_tag": "High (>40g)",
-    "fat_tag": "High (>15g)",
-    "cost_tier": "Budget (<$15)",
+    "protein_tag": "Very High (>30g)",
+    "carbs_tag": "Very High (>60g)",
+    "fat_tag": "Very High (>20g)",
+    "cost_tier": "Moderate (<$10)",
     "pantry_ingredients_used": [
-     "200g chicken breast",
-     "150g rice",
-     "120g kimchi",
-     "50g carrot",
-     "10ml sesame oil"
+     "200g noodles",
+     "250g beef",
+     "3 tbsp chilli",
+     "100g cucumber",
+     "800ml beef broth",
+     "15ml soy sauce"
     ]
    }
   },
   "is_complete": true,
   "missing_slots": [],
-  "daily_calorie_target": 3051.25,
-  "total_calories": 3080,
-  "daily_budget": 40.0,
-  "total_cost": 18.7,
+  "daily_calorie_target": 3035.75,
+  "total_calories": 3045,
+  "daily_budget": 40,
+  "total_cost": 23.8,
   "within_budget": true,
-  "explanation": "Totals 3080 kcal against a 3051 kcal daily target; an estimated 18.70 \u2014 within your 40.00 daily budget.",
+  "explanation": "Totals 3045 kcal against a 3036 kcal daily target; an estimated 23.80 \u2014 within your 40.00 daily budget.",
   "user_id": "tim"
  },
- "5e0e175d-7629-420a-8039-b0a87111ffd8": {
+ "bd2603f1-cd7e-4812-ba7c-84122b070d3c": {
   "meals": {
    "breakfast": {
-    "name": "Beef and Tomato Breakfast Quesadilla",
+    "name": "Yong Tau Foo Clear Soup with Bee Hoon",
+    "source_type": "eat_out",
+    "calorie_range": "High (>700 kcal)",
+    "calorie_tag": "on_target",
+    "protein_tag": "Very High (>30g)",
+    "carbs_tag": "Very High (>60g)",
+    "fat_tag": "High (>10-20g)",
+    "cost_tier": "Moderate (<$10)",
+    "pantry_ingredients_used": []
+   },
+   "lunch": {
+    "name": "Economical Rice with Steamed Chicken and Vegetables",
+    "source_type": "eat_out",
+    "calorie_range": "High (>700 kcal)",
+    "calorie_tag": "on_target",
+    "protein_tag": "Very High (>30g)",
+    "carbs_tag": "Very High (>60g)",
+    "fat_tag": "High (>10-20g)",
+    "cost_tier": "Moderate (<$10)",
+    "pantry_ingredients_used": []
+   },
+   "dinner": {
+    "name": "Chicken and Vegetable Hor Fun (Light Gravy)",
+    "source_type": "eat_out",
+    "calorie_range": "High (>700 kcal)",
+    "calorie_tag": "on_target",
+    "protein_tag": "Very High (>30g)",
+    "carbs_tag": "Very High (>60g)",
+    "fat_tag": "Very High (>20g)",
+    "cost_tier": "Moderate (<$10)",
+    "pantry_ingredients_used": []
+   }
+  },
+  "is_complete": true,
+  "missing_slots": [],
+  "daily_calorie_target": 3035.75,
+  "total_calories": 2770,
+  "daily_budget": 15,
+  "total_cost": 18.0,
+  "within_budget": false,
+  "explanation": "Totals 2770 kcal against a 3036 kcal daily target; an estimated 18.00 \u2014 over your 15.00 daily budget.",
+  "user_id": "tim"
+ },
+ "a406bac2-62fa-4ac7-8a57-aad597af59a5": {
+  "meals": {
+   "breakfast": {
+    "name": "Sweet Mango Sticky Rice Bowl with Greek Yogurt",
     "source_type": "home_cooked",
     "calorie_range": "High (>700 kcal)",
     "calorie_tag": "on_target",
-    "protein_tag": "High (>25g)",
-    "carbs_tag": "High (>40g)",
-    "fat_tag": "High (>15g)",
-    "cost_tier": "Budget (<$15)",
+    "protein_tag": "Very High (>30g)",
+    "carbs_tag": "Very High (>60g)",
+    "fat_tag": "High (>10-20g)",
+    "cost_tier": "Moderate (<$10)",
     "pantry_ingredients_used": [
-     "lean ground beef: 250g",
-     "tortilla wrap: 2 pieces",
-     "tomato: 80g",
-     "corn: 50g",
-     "mozzarella cheese: 40g"
+     "Glutinous rice",
+     "Coconut milk",
+     "Sugar",
+     "Ripe mango",
+     "Greek yogurt"
     ]
    },
    "lunch": {
-    "name": "Beef and Vegetable Mexican Wrap",
+    "name": "Sweet Teriyaki Chicken Donburi with Egg",
     "source_type": "home_cooked",
     "calorie_range": "High (>700 kcal)",
     "calorie_tag": "on_target",
-    "protein_tag": "High (>25g)",
-    "carbs_tag": "High (>40g)",
-    "fat_tag": "High (>15g)",
-    "cost_tier": "Budget (<$15)",
+    "protein_tag": "Very High (>30g)",
+    "carbs_tag": "Very High (>60g)",
+    "fat_tag": "Very High (>20g)",
+    "cost_tier": "Moderate (<$10)",
     "pantry_ingredients_used": [
-     "lean beef strips: 260g",
-     "tortilla wrap: 2 pieces",
-     "tomato: 60g",
-     "cucumber: 50g",
-     "carrot: 50g",
-     "sour cream: 30g"
+     "Chicken breast",
+     "Teriyaki sauce",
+     "Honey",
+     "Japanese white rice",
+     "Eggs",
+     "Mirin",
+     "Soy sauce"
     ]
    },
    "dinner": {
-    "name": "Mexican Beef and Corn Rice Skillet",
+    "name": "Sweet Honey Glazed Roasted Pork Chop with Sweet Potato Mash",
     "source_type": "home_cooked",
     "calorie_range": "High (>700 kcal)",
     "calorie_tag": "on_target",
-    "protein_tag": "High (>25g)",
-    "carbs_tag": "High (>40g)",
-    "fat_tag": "High (>15g)",
-    "cost_tier": "Budget (<$15)",
+    "protein_tag": "Very High (>30g)",
+    "carbs_tag": "Very High (>60g)",
+    "fat_tag": "Very High (>20g)",
+    "cost_tier": "Moderate (<$10)",
     "pantry_ingredients_used": [
-     "lean ground beef: 250g",
-     "cooked rice: 300g",
-     "corn: 80g",
-     "tomato: 80g",
-     "carrot: 50g",
-     "taco seasoning: 15g"
+     "Pork chops",
+     "Honey",
+     "Brown sugar",
+     "Soy sauce",
+     "Garlic",
+     "Sweet potatoes",
+     "Butter",
+     "Milk"
     ]
    }
   },
   "is_complete": true,
   "missing_slots": [],
-  "daily_calorie_target": 3043.5,
-  "total_calories": 3060,
-  "daily_budget": 30,
-  "total_cost": 19.0,
+  "daily_calorie_target": 3035.75,
+  "total_calories": 3010,
+  "daily_budget": 30.0,
+  "total_cost": 18.7,
   "within_budget": true,
-  "explanation": "Totals 3060 kcal against a 3044 kcal daily target; an estimated 19.00 \u2014 within your 30.00 daily budget.",
+  "explanation": "Totals 3010 kcal against a 3036 kcal daily target; an estimated 18.70 \u2014 within your 30.00 daily budget.",
   "user_id": "tim"
  }
 }
