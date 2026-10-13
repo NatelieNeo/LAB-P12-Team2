@@ -89,6 +89,7 @@ def main():
             updated_data["dietary_restrictions"] = get_dietary_restrictions(allow_null=True) or input_record["dietary_restrictions"]
 
             update_user_profile(input_record["username"], updated_data)
+            input_record.update(updated_data)
             input("\nPress Enter to return to the main menu...")  # Pause before returning to the main menu
 
         elif user_option == "5":

@@ -2,34 +2,24 @@
  "3c9491b2-eb59-437b-b6d7-382ff1da959c": {
   "username": "tim",
   "name": "timothy",
-  "age": 16,
+  "age": 21,
   "gender": "male",
-  "weight_kg": 46.0,
-  "height_cm": 149.0,
+  "weight_kg": 75.0,
+  "height_cm": 180.0,
   "activity_level": "moderate",
   "goal": "gain",
-  "dietary_restrictions": [],
-  "meal_preference": "spicy",
+  "dietary_restrictions": [
+   "fish"
+  ],
+  "meal_preference": "savoury",
   "meal_source": "both",
   "pantry_ingredients": [
-   "chilli",
    "kimchi",
-   "cucumber",
+   "cheese",
    "carrot",
    "rice",
    "chicken"
   ],
-  "daily_budget": 30.0
- },
- "dc2c12b1-861d-4dda-a705-b853cc4824c5": {
-  "username": "bob",
-  "name": "Bobby",
-  "age": 26,
-  "gender": "M",
-  "weight_kg": 80.0,
-  "height_cm": 178.0,
-  "activity_level": "moderately active",
-  "goal": "gain",
-  "dietary_restrictions": "fish"
+  "daily_budget": 40.0
  }
 }

@@ -38,19 +38,56 @@ MACRO_SPLITS = {
     "gain": {"protein": 0.35, "carbs": 0.40, "fat": 0.25},
 }
 
+CUISINE_KEYWORDS = {
+    "chinese": (
+        "chinese", "wonton", "dumpling", "congee", "chow mein", "fried rice",
+        "yong tau foo", "chicken rice", "char siu", "dim sum", "bao",
+    ),
+    "japanese": (
+        "japanese", "sushi", "sashimi", "teriyaki", "ramen", "udon", "soba",
+        "bento", "miso", "katsu", "onigiri", "tempura",
+    ),
+    "western": (
+        "western", "burger", "sandwich", "sub", "steak", "fish and chips",
+        "roast chicken", "mashed potato", "baked potato", "omelette",
+    ),
+    "indian": (
+        "indian", "biryani", "tandoori", "roti prata", "naan", "masala",
+        "chapati", "dosa", "dal",
+    ),
+    "korean": (
+        "korean", "kimchi", "bibimbap", "bulgogi", "tteokbokki", "kimbap",
+    ),
+    "thai": (
+        "thai", "pad thai", "tom yum", "green curry", "massaman", "larb",
+    ),
+    "malay": (
+        "malay", "nasi lemak", "satay", "rendang", "mee rebus", "laksa",
+    ),
+    "italian": (
+        "italian", "pizza", "pasta", "lasagna", "risotto", "carbonara",
+    ),
+    "mexican": (
+        "mexican", "taco", "burrito", "quesadilla", "enchilada",
+    ),
+}
+
 
 def calculate_bmr(gender: str, weight_kg: float, height_cm: float, age: int) -> float:
-    """Mifflin-St Jeor BMR formula. Case-insensitive on gender so an
-    unnormalized value ("Male", "MALE") never silently falls through to
-    the female formula."""
+    """Mifflin-St Jeor BMR formula, accepting the CLI's M/F values too."""
     base = (10 * weight_kg) + (6.25 * height_cm) - (5 * age)
-    return base + 5 if str(gender).lower() == "male" else base - 161
+    normalized_gender = str(gender).strip().lower()
+    return base + 5 if normalized_gender in {"male", "m"} else base - 161
 
 
 def calculate_tdee(bmr: float, activity_level: str) -> float:
-    """Scale BMR by an activity multiplier to estimate TDEE. Unknown
-    activity levels default to "sedentary" (1.2) rather than crashing."""
-    multiplier = ACTIVITY_MULTIPLIERS.get(activity_level, ACTIVITY_MULTIPLIERS["sedentary"])
+    """Scale BMR by an activity multiplier, including CLI label variants."""
+    normalized_level = str(activity_level).strip().lower().replace(" ", "_")
+    normalized_level = {
+        "moderately_active": "moderate",
+        "very_active": "very_active",
+    }.get(normalized_level, normalized_level)
+    multiplier = ACTIVITY_MULTIPLIERS.get(normalized_level, ACTIVITY_MULTIPLIERS["sedentary"])
     return bmr * multiplier
 
 
@@ -117,6 +154,44 @@ def get_ingredient_names(ingredients: Optional[List[Any]]) -> List[str]:
     return names
 
 
+def normalize_dietary_restrictions(dietary_restrictions: Any) -> List[str]:
+    """Treat free-text restriction input as entries, not individual characters."""
+    if isinstance(dietary_restrictions, str):
+        restrictions = dietary_restrictions.replace(";", ",").split(",")
+    else:
+        restrictions = dietary_restrictions or []
+
+    no_restrictions = {"", "nil", "none", "no", "no restrictions", "n/a", "na"}
+    normalized = []
+    for restriction in restrictions:
+        value = restriction.strip()
+        value = value.lower().replace(" and ", ",")
+        for prefix in (
+            "i am allergic to ",
+            "i'm allergic to ",
+            "allergic to ",
+            "allergy to ",
+            "allergies to ",
+            "intolerant to ",
+            "intolerance to ",
+            "allergy: ",
+            "allergies: ",
+        ):
+            if value.startswith(prefix):
+                value = value[len(prefix):]
+                break
+        for suffix in (" allergy", " allergies", " allergic", " intolerance", " intolerant"):
+            if value.endswith(suffix):
+                value = value[:-len(suffix)]
+                break
+
+        for item in value.split(","):
+            item = item.strip(" \t\r\n.:;()")
+            if item and item not in no_restrictions:
+                normalized.append(item)
+    return normalized
+
+
 def group_candidates_by_slot(recommendations: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
     """Split the AI's single flat `recommendations` list into per-slot
     buckets keyed by MEAL_SLOTS, matching meal_type case-insensitively
@@ -134,7 +209,7 @@ def group_candidates_by_slot(recommendations: List[Dict[str, Any]]) -> Dict[str,
 # Business rules (applied within one meal slot's candidates)
 # ---------------------------------------------------------------------
 def apply_dietary_safety_rule(
-    candidates: List[Dict[str, Any]], dietary_restrictions: List[str]
+    candidates: List[Dict[str, Any]], dietary_restrictions: Any
 ) -> List[Dict[str, Any]]:
     """Rule: exclude any candidate whose ingredients OR dish name contain
     a restricted item. Substring matching (not exact match) so a
@@ -142,12 +217,17 @@ def apply_dietary_safety_rule(
     butter", and checking the dish name too catches a case like "Peanut
     Butter Toast" even if "peanut butter" never appears as its own
     ingredient entry."""
+    dietary_restrictions = normalize_dietary_restrictions(dietary_restrictions)
     if not dietary_restrictions:
         return candidates
     restricted_lower = [r.lower() for r in dietary_restrictions]
     safe = []
     for candidate in candidates:
-        haystack = [name.lower() for name in get_ingredient_names(candidate.get("ingredients"))]
+        ingredient_names = get_ingredient_names(candidate.get("ingredients"))
+        if candidate.get("meal_source_type") == "eat_out" and not ingredient_names:
+            continue
+
+        haystack = [name.lower() for name in ingredient_names]
         haystack.append(str(candidate.get("meal_name", "")).lower())
         if not any(restricted in text for restricted in restricted_lower for text in haystack):
             safe.append(candidate)
@@ -181,6 +261,30 @@ def calculate_macro_distance(candidate: Dict[str, Any], macro_targets: Dict[str,
     return protein_diff + carbs_diff + fat_diff
 
 
+def matches_meal_preference(candidate: Dict[str, Any], meal_preference: str) -> bool:
+    """Check whether a recommendation matches a known cuisine or food craving."""
+    preference = str(meal_preference or "").strip().lower()
+    if not preference:
+        return True
+
+    meal_text = " ".join(
+        [
+            str(candidate.get("meal_name", "")),
+            *get_ingredient_names(candidate.get("ingredients")),
+        ]
+    ).lower()
+
+    for cuisine, keywords in CUISINE_KEYWORDS.items():
+        if cuisine in preference:
+            return any(keyword in meal_text for keyword in keywords)
+
+    preference_terms = [
+        term for term in preference.replace(",", " ").split()
+        if term not in {"food", "foods", "dish", "dishes", "meal", "meals", "cuisine", "style"}
+    ]
+    return not preference_terms or any(term in meal_text for term in preference_terms)
+
+
 def cost_component(candidate: Dict[str, Any]) -> float:
     """A candidate with an unknown (None) estimated_cost is ranked last
     on cost, not treated as free — `cost or float("inf")` would be wrong
@@ -196,6 +300,7 @@ def rank_slot_candidates(
     macro_targets: Dict[str, float],
     dietary_restrictions: List[str],
     meal_source_preference: str,
+    meal_preference: str = "",
 ) -> List[Dict[str, Any]]:
     """Apply the hard filters (dietary safety, source preference) for
     ONE meal slot's raw AI candidates, then rank what's left.
@@ -208,9 +313,10 @@ def rank_slot_candidates(
          the per-meal protein/carbs/fat target, so a goal like "gain"
          actually favors protein-forward dishes, not just any dish at
          the right calorie count.
-      3. Cost (secondary factor, exactly as specified) — the final
-         tiebreaker between otherwise similarly-good options, cheaper
-         wins.
+      3. Cuisine/food preference — prefer the user's requested craving
+         between options with equivalent nutrition fit.
+      4. Cost (secondary factor) — cheaper wins after nutrition and
+         preference have been considered.
 
     If the source-preference filter would remove every candidate in this
     slot, it's skipped so a dietary-safe-but-wrong-source dish still
@@ -228,9 +334,15 @@ def rank_slot_candidates(
         annotated = dict(candidate)
         annotated["_calorie_distance"] = calculate_calorie_distance(candidate, per_meal_calorie_target)
         annotated["_macro_distance"] = calculate_macro_distance(candidate, macro_targets)
+        annotated["_preference_mismatch"] = not matches_meal_preference(candidate, meal_preference)
         scored.append(annotated)
 
-    scored.sort(key=lambda c: (c["_calorie_distance"], c["_macro_distance"], cost_component(c)))
+    scored.sort(key=lambda c: (
+        c["_calorie_distance"],
+        c["_macro_distance"],
+        c["_preference_mismatch"],
+        cost_component(c),
+    ))
     return scored
 
 
@@ -335,7 +447,11 @@ def annotate_meal(
         "carbs_tag": tag_carbs(candidate.get("carbs_g", 0)),
         "fat_tag": tag_fat(candidate.get("fat_g", 0)),
         "cost_tier": tag_cost(candidate.get("estimated_cost")),
-        "pantry_ingredients_used": candidate.get("ingredients")
+        "pantry_ingredients_used": (
+            candidate.get("ingredients")
+            if candidate.get("meal_source_type") == "home_cooked"
+            else []
+        )
     }
 
 # ---------------------------------------------------------------------
@@ -398,6 +514,7 @@ def build_meal_plan(
             per_meal_macro_targets,
             dietary_restrictions,
             meal_source_preference,
+            user_profile.get("meal_preference", ""),
         )
         top = select_top_candidate(ranked)
         if top is None:
@@ -475,7 +592,3 @@ def format_meal_plan(plan):
         ])
 
     return "\n".join(lines)
-
-
-
-

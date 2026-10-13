@@ -199,7 +199,7 @@ def test_target_math_and_profile_pipeline(profile):
     assert logic.calculate_bmr("male", 70, 175, 30) == 1648.75
     assert logic.calculate_bmr("MALE", 70, 175, 30) == 1648.75
     assert logic.calculate_bmr("female", 70, 175, 30) == 1482.75
-    assert logic.calculate_bmr("M", 70, 175, 30) == 1482.75  # Current fallback.
+    assert logic.calculate_bmr("M", 70, 175, 30) == 1648.75
     assert logic.calculate_per_meal_calorie_target(1500) == 500
     assert logic.calculate_per_meal_calorie_target(0) == 0
     targets = logic.calculate_targets(profile)
@@ -212,9 +212,15 @@ def test_target_math_and_profile_pipeline(profile):
 
 @pytest.mark.parametrize("activity,multiplier", [
     ("sedentary", 1.2), ("light", 1.375), ("moderate", 1.55),
-    ("active", 1.725), ("very_active", 1.9), ("unknown", 1.2)])
+    ("moderately active", 1.55), ("active", 1.725), ("very_active", 1.9),
+    ("very active", 1.9), ("unknown", 1.2)])
 def test_activity_multipliers(activity, multiplier):
     assert logic.calculate_tdee(1000, activity) == pytest.approx(1000 * multiplier)
+
+
+@pytest.mark.parametrize("gender", ["male", "MALE", "M", "m"])
+def test_male_gender_aliases_use_male_bmr_formula(gender):
+    assert logic.calculate_bmr(gender, 70, 175, 30) == 1648.75
 
 
 @pytest.mark.parametrize("goal,target,macros", [
@@ -243,7 +249,43 @@ def test_dietary_filter_checks_name_and_ingredients():
     assert logic.apply_dietary_safety_rule(items, ["PEANUT"]) == [items[2]]
     assert logic.apply_dietary_safety_rule(items, []) == items
     assert logic.apply_dietary_safety_rule(items, ["no peanut"]) == items  # Literal substring.
-    assert logic.apply_dietary_safety_rule(items, [""]) == []
+    assert logic.apply_dietary_safety_rule(items, [""]) == items
+
+
+def test_eat_out_allergen_in_ingredients_is_filtered_even_if_name_omits_it():
+    hidden_fish = meal(
+        "Lunch",
+        "Economical Rice with Chicken",
+        meal_source_type="eat_out",
+        ingredients=["rice", "chicken", "fish sauce"],
+        recipe_steps=[],
+        pantry_ingredients_used=[],
+    )
+    safe_dish = meal(
+        "Lunch",
+        "Chicken Rice",
+        meal_source_type="eat_out",
+        ingredients=["rice", "chicken"],
+        recipe_steps=[],
+        pantry_ingredients_used=[],
+    )
+
+    assert logic.apply_dietary_safety_rule(
+        [hidden_fish, safe_dish], "fish allergy"
+    ) == [safe_dish]
+
+
+def test_eat_out_dish_with_unknown_ingredients_is_excluded_for_restricted_user():
+    unknown_dish = meal(
+        "Lunch",
+        "Economical Rice with Chicken",
+        meal_source_type="eat_out",
+        ingredients=[],
+        recipe_steps=[],
+        pantry_ingredients_used=[],
+    )
+
+    assert logic.apply_dietary_safety_rule([unknown_dish], "fish") == []
 
 
 @pytest.mark.parametrize("source,count", [("home_cooked", 1), ("eat_out", 1),
@@ -278,6 +320,30 @@ def test_scoring_ranking_and_source_fallback():
     out = meal(meal_source_type="eat_out", calories=500)
     assert logic.rank_slot_candidates([out, best], 500, macros, [], "home_cooked")[0]["meal_source_type"] == "home_cooked"
     assert logic.rank_slot_candidates([out], 500, macros, [], "home_cooked")[0]["meal_source_type"] == "eat_out"
+
+
+def test_requested_cuisine_breaks_tie_after_nutrition_fit():
+    macros = {"protein_g": 25, "carbs_g": 40, "fat_g": 15}
+    chinese = meal("Lunch", "Chicken Rice", calories=500, cost=5)
+    western = meal("Lunch", "Grilled Chicken Sandwich", calories=500, cost=5)
+
+    ranked = logic.rank_slot_candidates(
+        [chinese, western], 500, macros, [], "both", "western"
+    )
+
+    assert ranked[0]["meal_name"] == "Grilled Chicken Sandwich"
+
+
+def test_requested_cuisine_does_not_override_better_nutrition_fit():
+    macros = {"protein_g": 25, "carbs_g": 40, "fat_g": 15}
+    western_less_fitting = meal("Lunch", "Grilled Chicken Sandwich", calories=400, cost=5)
+    chinese_better_fitting = meal("Lunch", "Chicken Rice", calories=500, cost=5)
+
+    ranked = logic.rank_slot_candidates(
+        [western_less_fitting, chinese_better_fitting], 500, macros, [], "both", "western"
+    )
+
+    assert ranked[0]["meal_name"] == "Chicken Rice"
     assert logic.rank_slot_candidates([meal(name="Peanut")], 500, macros, ["peanut"], "both") == []
 
 
@@ -319,6 +385,56 @@ def test_pantry_matching_and_exact_annotation():
         "fat_tag": "Medium (5-15g)", "cost_tier": "Budget (<$15)",
         "pantry_ingredients_used": ["150g Chicken breast", {"item": "rice"}]
     }
+
+
+@pytest.mark.parametrize("no_restrictions", ["nil", "none", "no", "no restrictions", ""])
+def test_textual_no_restrictions_does_not_filter_candidates(no_restrictions):
+    candidate = meal()
+    assert logic.apply_dietary_safety_rule([candidate], no_restrictions) == [candidate]
+
+
+def test_comma_separated_dietary_restrictions_are_individual_terms():
+    peanut_meal = meal(name="Peanut Butter Toast")
+    safe_meal = meal(name="Eggs on Toast")
+    assert logic.apply_dietary_safety_rule(
+        [peanut_meal, safe_meal], "peanut, shellfish"
+    ) == [safe_meal]
+
+
+@pytest.mark.parametrize(
+    "restriction",
+    ["fish allergy", "allergy to fish", "allergic to fish", "I am allergic to fish"],
+)
+def test_allergy_phrasing_filters_eat_out_dishes_by_name(restriction):
+    fish_dish = meal(
+        "Lunch",
+        "Economical Rice with Chicken and Fish",
+        meal_source_type="eat_out",
+        ingredients=[],
+        recipe_steps=[],
+        pantry_ingredients_used=[],
+    )
+    safe_dish = meal(
+        "Lunch",
+        "Chicken Rice",
+        meal_source_type="eat_out",
+        ingredients=["chicken", "rice"],
+    )
+    profile = {
+        "name": "Nisha", "age": 21, "gender": "female", "weight_kg": 52,
+        "height_cm": 165, "activity_level": "sedentary", "goal": "maintain",
+        "dietary_restrictions": restriction, "meal_source": "both",
+        "pantry_ingredients": [], "daily_budget": 10.5,
+    }
+    recommendations = [
+        meal("Breakfast"),
+        fish_dish,
+        safe_dish,
+        meal("Dinner"),
+    ]
+
+    plan = logic.build_meal_plan(recommendations, profile)
+    assert plan["meals"]["lunch"]["name"] == "Chicken Rice"
 
 
 def test_empty_partial_and_fully_filtered_plans(profile):

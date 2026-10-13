@@ -6,6 +6,7 @@ from google import genai
 
 from config import GEMINI_MODEL, MAX_RETRIES
 from manager.ai_handler_manager import parse_response
+from manager.logic_manager import calculate_macro_targets, calculate_targets
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -20,6 +21,10 @@ logger = logging.getLogger(__name__)
 # Build AI Prompt
 def build_prompt(input_record):
     # Build the prompt using validated data from io_manager
+    targets = calculate_targets(input_record)
+    daily_macro_targets = calculate_macro_targets(
+        targets["daily_calorie_target"], input_record["goal"]
+    )
     prompt = f"""
 You are the meal recommendation engine for Calora, a Singapore-based personalised meal planning application.
 
@@ -49,26 +54,24 @@ Daily budget: SGD {input_record['daily_budget']}
 
 
 NUTRITION ESTIMATION
-Based on the user's age, gender, weight, height, activity level and fitness goal, estimate suitable daily nutritional targets.
+Use the application-calculated values below as the authoritative nutrition targets; do not calculate a different target.
 
-Estimate:
-- daily calorie target in kcal
-- daily protein target in grams
-- daily carbohydrate target in grams
-- daily fat target in grams
+Daily targets:
+- calories: {targets['daily_calorie_target']:.0f} kcal
+- protein: {daily_macro_targets['protein_g']:.1f} g
+- carbohydrates: {daily_macro_targets['carbs_g']:.1f} g
+- fat: {daily_macro_targets['fat_g']:.1f} g
 
-The estimates should reasonably support the user's stated fitness goal.
+For planning, use three meals per day. Each meal's calorie target is approximately {targets['per_meal_calorie_target']:.0f} kcal, with per-meal macro targets of {targets['per_meal_macro_targets']['protein_g']:.1f} g protein, {targets['per_meal_macro_targets']['carbs_g']:.1f} g carbohydrates, and {targets['per_meal_macro_targets']['fat_g']:.1f} g fat.
 
-For example:
-- Weight-loss goals should generally prioritise sufficient protein while maintaining an appropriate calorie deficit.
-- Muscle-gain goals should generally prioritise sufficient protein and energy intake to support muscle growth.
-- Maintenance goals should aim to support the user's estimated daily energy requirements.
-
-Return the estimated targets as numerical values.
+The estimated_nutrition_targets object in your JSON must repeat the daily targets above.
 
 
 FOOD RECOMMENDATIONS
 Generate exactly 10 food recommendations that best match the user's requirements.
+Use only breakfast, lunch, or dinner as meal_type. Include at least 3 recommendations for each of these three meal types.
+Aim for realistic serving sizes whose calories are within approximately 80%-120% of the per-meal calorie target above. Prefer options within that range rather than consistently undersized meals; do not inflate portions or nutrition estimates to hit a number.
+The user's meal preference/craving is "{input_record['meal_preference']}". Treat this as an important preference: include at least 2 recommendations matching it for each meal type whenever safe, practical options exist. Keep recommendations within the user's calorie and macro targets; do not ignore the craving just because another cuisine is marginally closer nutritionally. If a matching option would conflict with an allergy, dietary restriction, or realistic budget, exclude it and explain nothing outside the JSON.
 
 Consider all of the following when generating meals:
 
@@ -81,6 +84,13 @@ Consider all of the following when generating meals:
 - practicality and availability
 
 Never recommend food containing anything listed under the user's dietary restrictions or allergies.
+
+
+GENERAL RECOMMENDATION RULES
+- AI handler validates format
+- AI checks recommendations against restrictions
+- Code removes incompatible or uncertain meals
+- Display remaining meals
 
 
 MEAL SOURCE
@@ -116,7 +126,9 @@ For meals where meal_source_type is "eat_out":
 - Estimate protein, carbohydrates and fat for the portion.
 - Estimate the price in Singapore Dollars.
 - Do not invent a specific restaurant, stall or business.
-- ingredients must be an empty list.
+- In ingredients, list the known main ingredients in the dish, including sauces, stock, and common condiments when known. Ingredient names are enough; quantities are not needed.
+- Never leave ingredients empty for an eat-out dish. If you cannot identify its ingredients reliably, do not recommend that dish.
+- Do not claim a dish is safe for an allergy unless its ingredients are known.
 - recipe_steps must be an empty list.
 
 # home_cooked OPTIONS
@@ -144,7 +156,7 @@ pantry_ingredients_used must contain only ingredients that:
 
 If no pantry ingredients are used, return an empty list.
 
-For eat-out recommendations, return an empty list.
+For eat-out recommendations, return an empty list. The ingredients field still lists the dish's known ingredients for dietary-restriction filtering.
 
 NUTRITION INFORMATION
 # Raw nutrition estimates for each recommendation
