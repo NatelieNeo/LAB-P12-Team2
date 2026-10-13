@@ -1,62 +1,4 @@
 {
- "de0c4d40-460e-404f-be5c-df80a96c55f9": {
-  "meals": {
-   "breakfast": {
-    "name": "Spicy Tofu Scramble Wrap",
-    "source_type": "home_cooked",
-    "calorie_range": "Low (<400 kcal)",
-    "calorie_tag": "on_target",
-    "protein_tag": "High (>25g)",
-    "carbs_tag": "Medium (15-40g)",
-    "fat_tag": "Medium (5-15g)",
-    "cost_tier": "Budget (<$15)",
-    "pantry_ingredients_used": [
-     "150g firm tofu",
-     "1 whole wheat tortilla",
-     "1 tbsp chilli sauce",
-     "1 tsp oil",
-     "Salt to taste"
-    ]
-   },
-   "lunch": {
-    "name": "Spicy Yong Tau Foo Soup",
-    "source_type": "eat_out",
-    "calorie_range": "Low (<400 kcal)",
-    "calorie_tag": "on_target",
-    "protein_tag": "High (>25g)",
-    "carbs_tag": "Medium (15-40g)",
-    "fat_tag": "Medium (5-15g)",
-    "cost_tier": "Budget (<$15)",
-    "pantry_ingredients_used": []
-   },
-   "dinner": {
-    "name": "Spicy Kimchi Noodles",
-    "source_type": "home_cooked",
-    "calorie_range": "Low (<400 kcal)",
-    "calorie_tag": "on_target",
-    "protein_tag": "High (>25g)",
-    "carbs_tag": "Medium (15-40g)",
-    "fat_tag": "Medium (5-15g)",
-    "cost_tier": "Budget (<$15)",
-    "pantry_ingredients_used": [
-     "80g noodles",
-     "80g kimchi",
-     "100g tofu",
-     "1 tbsp chilli paste",
-     "250ml water"
-    ]
-   }
-  },
-  "is_complete": true,
-  "missing_slots": [],
-  "daily_calorie_target": 1049.8,
-  "total_calories": 1040,
-  "daily_budget": 30,
-  "total_cost": 11.2,
-  "within_budget": true,
-  "explanation": "Totals 1040 kcal against a 1050 kcal daily target; an estimated 11.20 \u2014 within your 30.00 daily budget.",
-  "user_id": "jen"
- },
  "398b30e4-6c8e-4233-9a25-59919bb5ba82": {
   "meals": {
    "breakfast": {
@@ -114,6 +56,72 @@
   "total_cost": 18.7,
   "within_budget": true,
   "explanation": "Totals 3080 kcal against a 3051 kcal daily target; an estimated 18.70 \u2014 within your 40.00 daily budget.",
+  "user_id": "tim"
+ },
+ "5e0e175d-7629-420a-8039-b0a87111ffd8": {
+  "meals": {
+   "breakfast": {
+    "name": "Beef and Tomato Breakfast Quesadilla",
+    "source_type": "home_cooked",
+    "calorie_range": "High (>700 kcal)",
+    "calorie_tag": "on_target",
+    "protein_tag": "High (>25g)",
+    "carbs_tag": "High (>40g)",
+    "fat_tag": "High (>15g)",
+    "cost_tier": "Budget (<$15)",
+    "pantry_ingredients_used": [
+     "lean ground beef: 250g",
+     "tortilla wrap: 2 pieces",
+     "tomato: 80g",
+     "corn: 50g",
+     "mozzarella cheese: 40g"
+    ]
+   },
+   "lunch": {
+    "name": "Beef and Vegetable Mexican Wrap",
+    "source_type": "home_cooked",
+    "calorie_range": "High (>700 kcal)",
+    "calorie_tag": "on_target",
+    "protein_tag": "High (>25g)",
+    "carbs_tag": "High (>40g)",
+    "fat_tag": "High (>15g)",
+    "cost_tier": "Budget (<$15)",
+    "pantry_ingredients_used": [
+     "lean beef strips: 260g",
+     "tortilla wrap: 2 pieces",
+     "tomato: 60g",
+     "cucumber: 50g",
+     "carrot: 50g",
+     "sour cream: 30g"
+    ]
+   },
+   "dinner": {
+    "name": "Mexican Beef and Corn Rice Skillet",
+    "source_type": "home_cooked",
+    "calorie_range": "High (>700 kcal)",
+    "calorie_tag": "on_target",
+    "protein_tag": "High (>25g)",
+    "carbs_tag": "High (>40g)",
+    "fat_tag": "High (>15g)",
+    "cost_tier": "Budget (<$15)",
+    "pantry_ingredients_used": [
+     "lean ground beef: 250g",
+     "cooked rice: 300g",
+     "corn: 80g",
+     "tomato: 80g",
+     "carrot: 50g",
+     "taco seasoning: 15g"
+    ]
+   }
+  },
+  "is_complete": true,
+  "missing_slots": [],
+  "daily_calorie_target": 3043.5,
+  "total_calories": 3060,
+  "daily_budget": 30,
+  "total_cost": 19.0,
+  "within_budget": true,
+  "explanation": "Totals 3060 kcal against a 3044 kcal daily target; an estimated 19.00 \u2014 within your 30.00 daily budget.",
   "user_id": "tim"
  }
 }
