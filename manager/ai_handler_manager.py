@@ -1,5 +1,6 @@
 import json
 import logging
+from config import MEALS_PER_RECOMMENDATION_SET
 
 logger = logging.getLogger(__name__)
 
@@ -91,7 +92,7 @@ def validate_recommendations(recommendations):
     if not isinstance(recommendations, list):
         return False
 
-    if len(recommendations) != 10:
+    if len(recommendations) != MEALS_PER_RECOMMENDATION_SET:
         return False
 
     for recommendation in recommendations:
