@@ -252,16 +252,6 @@ def call_ai(input_record):
         )
         return None
 
-    try:
-        client = genai.Client()
-
-    except Exception as error:
-        logger.error(
-            "Failed to initialise Gemini client: %s",
-            error
-        )
-        return None
-
     for attempt in range(1, MAX_RETRIES + 1):
 
         try:
