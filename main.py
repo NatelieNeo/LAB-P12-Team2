@@ -1,5 +1,14 @@
 # Connects the IO layer to the AI layer
 import json
+from dotenv import load_dotenv
+import logging
+
+load_dotenv()  # Load environment variables from .env file
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
 from manager.data_manager import *
 from manager.io_manager import *
 from manager.ai_manager import call_ai

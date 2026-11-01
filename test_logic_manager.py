@@ -516,3 +516,45 @@ def test_unvalidated_logic_inputs_raise_existing_exceptions(profile):
 # -q keeps the output short.
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))
+
+
+# ---------------------------------------------------------------------
+# Dietary safety: hidden ingredients, categories, false positives
+# ---------------------------------------------------------------------
+def _meal(name, ingredients, source="home_cooked"):
+    return {"meal_name": name, "ingredients": ingredients, "meal_source_type": source}
+
+
+def test_peanut_oil_is_removed():
+    meal = _meal("Stir fry", ["peanut oil", "rice"])
+    assert logic.apply_dietary_safety_rule([meal], "peanut") == []
+
+
+def test_nuts_category_catches_almond():
+    meal = _meal("Granola", ["almond", "oats"])
+    assert logic.apply_dietary_safety_rule([meal], "nuts") == []
+
+
+def test_dairy_category_catches_cheese():
+    meal = _meal("Toast", ["cheese", "bread"])
+    assert logic.apply_dietary_safety_rule([meal], "dairy") == []
+
+
+def test_risky_dish_removed_for_peanut_even_without_peanut_listed():
+    meal = _meal("Chicken Satay", ["chicken", "sauce"], "eat_out")
+    assert logic.apply_dietary_safety_rule([meal], "peanut") == []
+
+
+def test_coconut_is_not_flagged_as_nut():
+    meal = _meal("Coconut rice", ["coconut", "rice"])
+    assert logic.apply_dietary_safety_rule([meal], "nut") == [meal]
+
+
+def test_eat_out_without_ingredients_is_removed_as_uncertain():
+    meal = _meal("Mystery dish", [], "eat_out")
+    assert logic.apply_dietary_safety_rule([meal], "peanut") == []
+
+
+def test_no_restrictions_returns_all_candidates():
+    meal = _meal("Satay", ["chicken"], "eat_out")
+    assert logic.apply_dietary_safety_rule([meal], "nil") == [meal]

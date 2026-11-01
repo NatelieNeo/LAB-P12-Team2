@@ -1,19 +1,11 @@
 import os
 import logging
 
-from dotenv import load_dotenv
 from google import genai
 
 from config import GEMINI_MODEL, MAX_RETRIES
 from manager.ai_handler_manager import parse_response
 from manager.logic_manager import calculate_macro_targets, calculate_targets
-
-load_dotenv()  # Load environment variables from .env file
-
-logging.basicConfig(
-level=logging.INFO,
-format="%(asctime)s - %(levelname)s - %(message)s"
-)
 
 logger = logging.getLogger(__name__)
 

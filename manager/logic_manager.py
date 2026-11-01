@@ -138,6 +138,21 @@ def calculate_targets(user_profile: Dict[str, Any]) -> Dict[str, Any]:
 # ---------------------------------------------------------------------
 # Normalizing the AI's raw recommendation shape
 # ---------------------------------------------------------------------
+DISCLAIMER = (
+    "Always check food labels and ask the stall about allergens. "
+    "Calora cannot guarantee a meal is allergen-free."
+)
+
+
+def get_disclaimer(plan: Dict[str, Any]) -> str:
+    """Allergen disclaimer, only when the plan has an eat-out meal
+    (home-cooked meals are made by the user, so there is no stall to ask)."""
+    meals = (plan or {}).get("meals", {})
+    if any(m.get("source_type") == "eat_out" for m in meals.values()):
+        return DISCLAIMER
+    return ""
+
+
 def get_ingredient_names(ingredients: Optional[List[Any]]) -> List[str]:
     """Reduce the AI's ingredients list — each entry either a plain
     string or a {"item": ..., "quantity": ..., "unit": ...} object (the
@@ -208,28 +223,71 @@ def group_candidates_by_slot(recommendations: List[Dict[str, Any]]) -> Dict[str,
 # ---------------------------------------------------------------------
 # Business rules (applied within one meal slot's candidates)
 # ---------------------------------------------------------------------
+# Maps a restriction to related ingredient words the AI might list instead
+RESTRICTION_KEYWORDS = {
+    "peanut": ["peanut", "groundnut", "satay", "kacang"],
+    "nuts": ["peanut", "almond", "cashew", "walnut", "hazelnut",
+             "pistachio", "pecan", "groundnut", "satay"],
+    "tree nut": ["almond", "cashew", "walnut", "hazelnut", "pistachio", "pecan"],
+    "dairy": ["milk", "cheese", "butter", "cream", "yogurt", "yoghurt", "ghee", "whey"],
+    "shellfish": ["prawn", "shrimp", "crab", "lobster", "cockle", "belacan", "oyster"],
+    "gluten": ["wheat", "flour", "bread", "noodle", "pasta", "soy sauce", "barley"],
+    "egg": ["egg", "mayonnaise"],
+    "soy": ["soy", "tofu", "tempeh", "miso"],
+    "fish": ["fish", "anchovy", "ikan bilis"],
+}
+
+# Dishes whose ingredient lists are often incomplete: removed outright
+# when a related restriction is present (uncertain meals are not shown).
+RISKY_DISHES = {
+    "peanut": ["satay", "rojak", "pad thai", "kueh pie tee"],
+    "nuts": ["satay", "rojak", "pad thai"],
+    "shellfish": ["laksa", "hokkien mee", "rojak", "har cheong"],
+    "gluten": ["laksa", "mee goreng"],
+}
+
+# Safe words that contain an allergen as a substring (e.g. "nut" in "coconut")
+SAFE_EXCEPTIONS = ["coconut", "nutmeg", "butternut", "water chestnut", "peanut-free"]
+
+
+def _contains_term(text: str, term: str) -> bool:
+    for safe in SAFE_EXCEPTIONS:
+        text = text.replace(safe, "")
+    return term in text
+
+
 def apply_dietary_safety_rule(
     candidates: List[Dict[str, Any]], dietary_restrictions: Any
 ) -> List[Dict[str, Any]]:
-    """Rule: exclude any candidate whose ingredients OR dish name contain
-    a restricted item. Substring matching (not exact match) so a
-    "peanut" restriction also catches an ingredient listed as "peanut
-    butter", and checking the dish name too catches a case like "Peanut
-    Butter Toast" even if "peanut butter" never appears as its own
-    ingredient entry."""
-    dietary_restrictions = normalize_dietary_restrictions(dietary_restrictions)
-    if not dietary_restrictions:
+    """Rule: exclude any candidate that may contain a restricted item.
+
+    Layers: (1) restrictions are expanded to related keywords (e.g.
+    "nuts" -> almond, cashew...), (2) ingredients and dish name are
+    substring-matched, ignoring known safe words like "coconut",
+    (3) dishes known for hidden allergens (e.g. satay) are dropped,
+    (4) eat-out dishes with no ingredient list are dropped as uncertain."""
+    restrictions = normalize_dietary_restrictions(dietary_restrictions)
+    if not restrictions:
         return candidates
-    restricted_lower = [r.lower() for r in dietary_restrictions]
+
+    banned_terms = set(restrictions)
+    risky_dishes = set()
+    for restriction in restrictions:
+        banned_terms.update(RESTRICTION_KEYWORDS.get(restriction, []))
+        risky_dishes.update(RISKY_DISHES.get(restriction, []))
+
     safe = []
     for candidate in candidates:
-        ingredient_names = get_ingredient_names(candidate.get("ingredients"))
-        if candidate.get("meal_source_type") == "eat_out" and not ingredient_names:
+        names = [n.lower() for n in get_ingredient_names(candidate.get("ingredients"))]
+        meal_name = str(candidate.get("meal_name", "")).lower()
+
+        if candidate.get("meal_source_type") == "eat_out" and not names:
+            continue
+        if any(dish in meal_name for dish in risky_dishes):
             continue
 
-        haystack = [name.lower() for name in ingredient_names]
-        haystack.append(str(candidate.get("meal_name", "")).lower())
-        if not any(restricted in text for restricted in restricted_lower for text in haystack):
+        haystack = names + [meal_name]
+        if not any(_contains_term(text, term) for term in banned_terms for text in haystack):
             safe.append(candidate)
     return safe
 
@@ -600,5 +658,9 @@ def format_meal_plan(plan):
             "",
             "Missing meals: " + ", ".join(missing_slots),
         ])
+
+    disclaimer = get_disclaimer(plan)
+    if disclaimer:
+        lines.extend(["", disclaimer])
 
     return "\n".join(lines)

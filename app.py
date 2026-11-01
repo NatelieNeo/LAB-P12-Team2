@@ -1,7 +1,9 @@
 """Flask web application for Calora's meal planner."""
 
+import logging
 import os
 
+from dotenv import load_dotenv
 from flask import Flask, redirect, render_template, request, session, url_for
 
 from manager.ai_manager import call_ai
@@ -12,12 +14,23 @@ from manager.data_manager import (
     save_user_profile,
     update_user_profile,
 )
-from manager.logic_manager import build_meal_plan
+from manager.logic_manager import (
+    get_disclaimer,
+    build_meal_plan,
+    normalize_dietary_restrictions,
+)
+
+load_dotenv()
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
 
 HOST = "127.0.0.1"
 PORT = 8080
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "calora-development-key")
+app.jinja_env.globals["get_disclaimer"] = get_disclaimer
 
 
 def render_form(
@@ -42,13 +55,9 @@ def render_form(
 
 def build_input_record(form_data: dict[str, str]) -> dict:
     """Convert browser form values into the shape used by the project layers."""
-    restrictions = [
-        item.strip()
-        for item in form_data.get("dietary_restrictions", "").split(",")
-        if item.strip()
-    ]
-    if restrictions == ["nil"]:
-        restrictions = []
+    restrictions = normalize_dietary_restrictions(
+        form_data.get("dietary_restrictions", "")
+    )
     pantry = [
         item.strip()
         for item in form_data.get("ingredients", "").split(",")

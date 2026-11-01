@@ -1,130 +1,75 @@
 import json
 import logging
-from config import MEALS_PER_RECOMMENDATION_SET
+
+from config import RECOMMENDATION_COUNT
 
 logger = logging.getLogger(__name__)
 
 
+# Required schema, defined once and reused by the validators below
+TARGET_FIELDS = {
+    "calorie_target",
+    "protein_target_g",
+    "carb_target_g",
+    "fat_target_g",
+}
+
+STRING_FIELDS = ["meal_type", "meal_name", "portion_size"]
+NUMERIC_FIELDS = ["calories", "protein_g", "carbs_g", "fat_g", "estimated_cost"]
+LIST_FIELDS = ["pantry_ingredients_used", "ingredients", "recipe_steps"]
+RECOMMENDATION_FIELDS = set(
+    STRING_FIELDS + NUMERIC_FIELDS + LIST_FIELDS + ["meal_source_type"]
+)
+MEAL_SOURCE_TYPES = ("eat_out", "home_cooked")
+TOP_LEVEL_FIELDS = {"estimated_nutrition_targets", "recommendations"}
+
+
+def _is_number(value):
+    return isinstance(value, (int, float))
+
+
 def validate_nutrition_targets(targets):
-    if not isinstance(targets, dict):
+    if not isinstance(targets, dict) or set(targets.keys()) != TARGET_FIELDS:
         return False
 
-    required_target_fields = {
-        "calorie_target",
-        "protein_target_g",
-        "carb_target_g",
-        "fat_target_g"
-    }
-
-    if set(targets.keys()) != required_target_fields:
-        return False
-
-    for value in targets.values():
-        if not isinstance(value, (int, float)):
-            return False
-
-    return True
+    return all(_is_number(value) for value in targets.values())
 
 
 def validate_recommendation(recommendation):
     if not isinstance(recommendation, dict):
         return False
 
-    required_recommendation_fields = {
-        "meal_type",
-        "meal_name",
-        "meal_source_type",
-        "calories",
-        "protein_g",
-        "carbs_g",
-        "fat_g",
-        "estimated_cost",
-        "portion_size",
-        "pantry_ingredients_used",
-        "ingredients",
-        "recipe_steps"
-    }
-
-    if set(recommendation.keys()) != required_recommendation_fields:
+    if set(recommendation.keys()) != RECOMMENDATION_FIELDS:
         return False
 
-    if not isinstance(recommendation["meal_type"], str):
+    if recommendation["meal_source_type"] not in MEAL_SOURCE_TYPES:
         return False
 
-    if not isinstance(recommendation["meal_name"], str):
-        return False
-
-    if not isinstance(recommendation["portion_size"], str):
-        return False
-
-    if recommendation["meal_source_type"] not in [
-        "eat_out",
-        "home_cooked"
-    ]:
-        return False
-
-    numeric_fields = [
-        "calories",
-        "protein_g",
-        "carbs_g",
-        "fat_g",
-        "estimated_cost"
-    ]
-
-    for field in numeric_fields:
-        if not isinstance(recommendation[field], (int, float)):
-            return False
-
-    list_fields = [
-        "pantry_ingredients_used",
-        "ingredients",
-        "recipe_steps"
-    ]
-
-    for field in list_fields:
-        if not isinstance(recommendation[field], list):
-            return False
-
-    return True
+    return (
+        all(isinstance(recommendation[f], str) for f in STRING_FIELDS)
+        and all(_is_number(recommendation[f]) for f in NUMERIC_FIELDS)
+        and all(isinstance(recommendation[f], list) for f in LIST_FIELDS)
+    )
 
 
 def validate_recommendations(recommendations):
     if not isinstance(recommendations, list):
         return False
 
-    if len(recommendations) != MEALS_PER_RECOMMENDATION_SET:
+    if len(recommendations) != RECOMMENDATION_COUNT:
         return False
 
-    for recommendation in recommendations:
-        if not validate_recommendation(recommendation):
-            return False
-
-    return True
+    return all(validate_recommendation(r) for r in recommendations)
 
 
 def validate_response(data):
-    if not isinstance(data, dict):
+    if not isinstance(data, dict) or set(data.keys()) != TOP_LEVEL_FIELDS:
         return False
 
-    required_top_fields = {
-        "estimated_nutrition_targets",
-        "recommendations"
-    }
-
-    if set(data.keys()) != required_top_fields:
-        return False
-
-    if not validate_nutrition_targets(
-        data["estimated_nutrition_targets"]
-    ):
-        return False
-
-    if not validate_recommendations(
-        data["recommendations"]
-    ):
-        return False
-
-    return True
+    return (
+        validate_nutrition_targets(data["estimated_nutrition_targets"])
+        and validate_recommendations(data["recommendations"])
+    )
 
 
 def parse_response(response_text):
