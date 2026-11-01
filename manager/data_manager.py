@@ -1,6 +1,5 @@
 import json
 import uuid
-import dotenv
 from config import DATA_FILE_ROOT
 
 user_file_path = DATA_FILE_ROOT + "user_profiles.json"
